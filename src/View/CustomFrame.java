@@ -36,6 +36,8 @@ public class  CustomFrame extends JFrame {
             }
         });
         this.setVisible(true);
+
+        this.repaint();
     }
 
     private void adaptContent() {
