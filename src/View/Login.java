@@ -13,6 +13,10 @@ import java.io.File;
 import java.io.IOException;
 
 public class Login extends JPanel {
+    public CustomTextField userNameField;
+    public CustomTextField passwordField;
+    public CustomButton loginBtn;
+
     public Login() {
         this.setBackground(CustomFrame.BGCOLOR);
         this.setLayout(new BorderLayout(0,25));
@@ -61,16 +65,16 @@ public class Login extends JPanel {
         Font textFieldFont = new Font("Montserrat", Font.BOLD, 16);
         Color defaultBGColor = new Color(226, 226, 226);
 
-        CustomTextField userNameField = new CustomTextField(15, textFieldFont, defaultBGColor, new Dimension(5,5), false);
+        userNameField = new CustomTextField(15, textFieldFont, defaultBGColor, new Dimension(5,5), false);
         userNameField.setMaximumSize(new Dimension(Integer.MAX_VALUE, 40));
         formContainer.add(userNameField);
 
         // CENTER --> Form container --> TextField Password
-        CustomTextField passwordField = new CustomTextField(15, textFieldFont, defaultBGColor, new Dimension(5,5), true);
+        passwordField = new CustomTextField(15, textFieldFont, defaultBGColor, new Dimension(5,5), true);
         passwordField.setMaximumSize(new Dimension(Integer.MAX_VALUE, 40));
         formContainer.add(passwordField);
 
-        CustomButton loginBtn = new CustomButton("Iniciar sesión", 20 ,CustomFrame.BGCOLOR, new Color(0,25,81), Color.white, textFieldFont);
+        loginBtn = new CustomButton("Iniciar sesión", 20 ,CustomFrame.BGCOLOR, new Color(0,25,81), Color.white, textFieldFont);
         loginBtn.setMaximumSize(new Dimension(Integer.MAX_VALUE, 40));
         formContainer.add(loginBtn);
 

@@ -1,7 +1,6 @@
 package CustomUI;
 
 import javax.swing.*;
-import javax.swing.border.Border;
 import java.awt.*;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
@@ -14,7 +13,7 @@ public class CustomTextField extends JPanel {
 
     private JPasswordField textField;
     private Dimension padding;
-    private boolean onFocus = false;
+    boolean onFocus = false;
 
     @ConstructorProperties({"Valor de redondeo", "Fuente(Tipografia)", "Color de fondo", "Padding(Espaciado hacia adentro)", "¿Desea ocultar la informacion?"})
     public CustomTextField(int roundValue, Font font, Color defaultColor, Dimension padding, boolean needToHide) {
@@ -30,30 +29,49 @@ public class CustomTextField extends JPanel {
         textField.setFont(font);
         textField.setBackground(defaultColor);
         textField.setBorder(BorderFactory.createEmptyBorder(0,10,0,10));
+        /*if(!onFocus) {
+            textField.setForeground(new Color(139,139,139));
+            textField.setText("Hola");
+        } else {
+            textField.setForeground(Color.black);
+            textField.setText("");
+        }*/
         textField.addFocusListener(new FocusListener() {
             @Override
             public void focusGained(FocusEvent e) {
                 onFocus = true;
+                /*if(!onFocus) {
+                    textField.setForeground(new Color(139,139,139));
+                    textField.setText("Hola");
+                } else {
+                    textField.setForeground(Color.black);
+                    textField.setText("");
+                }*/
             }
 
             @Override
             public void focusLost(FocusEvent e) {
                 onFocus = false;
+                /*if(!onFocus) {
+                    textField.setForeground(new Color(139,139,139));
+                    textField.setText("Hola");
+                } else {
+                    textField.setForeground(Color.black);
+                    textField.setText("");
+                }*/
             }
         });
         this.add(textField);
-
-
     }
 
     @Override
     protected void paintComponent(Graphics g) {
+        System.out.println("HOLA");
         int vPadding = padding.height;
         int hPadding = padding.width;
 
         super.paintComponent(g);
         Graphics2D g2 = (Graphics2D)g;
-
 
         g2.setColor(defaultColor);
         g2.fillRoundRect(0,0, getWidth(), getHeight(), roundValue, roundValue);
@@ -100,5 +118,13 @@ public class CustomTextField extends JPanel {
 
     public void setPadding(Dimension padding) {
         this.padding = padding;
+    }
+
+    public boolean isOnFocus() {
+        return onFocus;
+    }
+
+    public void setOnFocus(boolean onFocus) {
+        this.onFocus = onFocus;
     }
 }
