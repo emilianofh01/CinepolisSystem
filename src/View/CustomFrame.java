@@ -4,6 +4,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.io.File;
+import java.io.IOException;
 
 public class  CustomFrame extends JFrame {
     static public Color BGCOLOR = new Color(0,32,105);
@@ -20,6 +22,14 @@ public class  CustomFrame extends JFrame {
 
 
     private void initializeFrame() {
+        try {
+            GraphicsEnvironment ge =
+                    GraphicsEnvironment.getLocalGraphicsEnvironment();
+            ge.registerFont(Font.createFont(Font.TRUETYPE_FONT, new File("src/Assets/Montserrat-Bold.ttf")));
+        } catch (IOException | FontFormatException e) {
+            e.printStackTrace();
+        }
+
         this.setMinimumSize(new Dimension(1080,701));
         this.setDefaultCloseOperation(EXIT_ON_CLOSE);
         this.setTitle("Cinepolis");
@@ -35,6 +45,7 @@ public class  CustomFrame extends JFrame {
                 adaptContent();
             }
         });
+
         this.setVisible(true);
 
         this.repaint();
