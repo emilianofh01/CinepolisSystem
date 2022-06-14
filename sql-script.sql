@@ -2,12 +2,14 @@ CREATE TABLE employee
 (
     id         INT AUTO_INCREMENT PRIMARY KEY,
     username   VARCHAR(40)  NOT NULL,
-    `password` varchar(100) NOT NULL
+    `password` varchar(100) NOT NULL,
+    is_admin   BOOL         NOT NULL
 );
 
 CREATE TABLE movie
 (
     id           INT AUTO_INCREMENT PRIMARY KEY,
+    cover        BLOB         NOT NULL,
     title        varchar(256) NOT NULL,
     director     varchar(256),
     description  varchar(1024),
