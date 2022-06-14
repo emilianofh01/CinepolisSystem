@@ -5,7 +5,6 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 public final class MYSQLConnection {
-    private static Connection conn;
     private static String driver = "com.mysql.cj.jdbc.Driver";
     private static String database = "cinepolis-db";
     private static String hostname = "localhost";
@@ -15,16 +14,18 @@ public final class MYSQLConnection {
     private static String url = "jdbc:mysql://" + hostname + ":" + port + "/" + database + "?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC";
 
     public static Connection getConnection() {
-        if (conn == null) {
-            try {
-                Class.forName(driver);
-                conn = DriverManager.getConnection(url, username, password);
-                System.out.println("Connection to database successfully established!");
-            } catch(SQLException | ClassNotFoundException ex) {
-                System.out.println("Connection to database failed!");
-                ex.printStackTrace();
-            }
+
+        Connection conn = null;
+
+        try {
+            Class.forName(driver);
+            conn = DriverManager.getConnection(url, username, password);
+            System.out.println("Connection to database successfully established!");
+        } catch(SQLException | ClassNotFoundException ex) {
+            System.out.println("Connection to database failed!");
+            ex.printStackTrace();
         }
+
         return conn;
     }
 }
