@@ -12,23 +12,23 @@ public class Movie {
     private String title;
     private String director;
     private String description;
-    private int duration_min;
+    private int durationMin;
     private Blob cover;
 
-    public Movie(int id, String title, String director, String description, int duration_min, Blob cover) {
+    public Movie(int id, String title, String director, String description, int durationMin, Blob cover) {
         this.id = id;
         this.title = title;
         this.director = director;
         this.description = description;
-        this.duration_min = duration_min;
+        this.durationMin = durationMin;
         this.cover = cover;
     }
 
-    public Movie(String title, String director, String description, int duration_min, Blob cover) {
+    public Movie(String title, String director, String description, int durationMin, Blob cover) {
         this.title = title;
         this.director = director;
         this.description = description;
-        this.duration_min = duration_min;
+        this.durationMin = durationMin;
         this.cover = cover;
     }
 
@@ -64,12 +64,12 @@ public class Movie {
         this.description = description;
     }
 
-    public int getDuration_min() {
-        return duration_min;
+    public int getDurationMin() {
+        return durationMin;
     }
 
-    public void setDuration_min(int duration_min) {
-        this.duration_min = duration_min;
+    public void setDurationMin(int durationMin) {
+        this.durationMin = durationMin;
     }
 
     public Blob getCover() {
@@ -86,7 +86,7 @@ public class Movie {
                 + ", title=" + title
                 + ", director=" + director
                 + ", description=" + description
-                + ", duration_min=" + duration_min;
+                + ", duration_min=" + durationMin;
     }
 
     public static ArrayList<Movie> movieList() {
@@ -139,7 +139,7 @@ public class Movie {
             st.setString(1, m.getTitle());
             st.setString(2, m.getDirector());
             st.setString(3, m.getDescription());
-            st.setInt(4, m.getDuration_min());
+            st.setInt(4, m.getDurationMin());
             st.setBlob(5, m.getCover());
 
             st.execute();
@@ -167,14 +167,16 @@ public class Movie {
                     + "director = ?,"
                     + "description = ?,"
                     + "duration_min = ?,"
-                    + "cover = ?";
+                    + "cover = ?"
+                    + "WHERE id = ?";
             st = conn.prepareStatement(query);
 
             st.setString(1, m.getTitle());
             st.setString(2, m.getDirector());
             st.setString(3, m.getDescription());
-            st.setInt(4, m.getDuration_min());
+            st.setInt(4, m.getDurationMin());
             st.setBlob(5, m.getCover());
+            st.setInt(6, m.getId());
 
             st.execute();
 
