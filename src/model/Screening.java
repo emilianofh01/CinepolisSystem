@@ -79,11 +79,12 @@ public class Screening {
     public static ArrayList<Screening> screeningList() {
         ArrayList<Screening> screenings = new ArrayList<>();
 
-        try (Connection conn = MYSQLConnection.getConnection()) {
+        try {
             String query = "SELECT * FROM screening";
-            Statement st = conn.prepareStatement(query);
+            Statement st = MYSQLConnection.conn.createStatement();
             ResultSet rs = st.executeQuery(query);
 
+            System.out.println(rs);
             while (rs.next()) {
                 screenings.add(new Screening(
                         rs.getInt("id"),
@@ -92,6 +93,7 @@ public class Screening {
                         rs.getTimestamp("screening_start")
                 ));
             }
+
             st.close();
             rs.close();
         } catch (SQLException ex) {

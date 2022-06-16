@@ -14,7 +14,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 public final class MYSQLConnection {
-    private static Connection conn = null;
+    public static Connection conn = null;
 
     public static Connection getConnection() {
         String driver = "com.mysql.cj.jdbc.Driver";

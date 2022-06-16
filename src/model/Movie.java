@@ -171,10 +171,11 @@ public class Movie {
     public static Movie getMovie(int id) {
         Movie movie = null;
 
-        try (Connection conn = MYSQLConnection.getConnection()) {
+        try {
 
-            String query = "SELECT * FROM movie WHERE id = " + id;
-            Statement st = conn.prepareStatement(query);
+            String query = "SELECT * FROM movie WHERE id = ?";
+            Statement st = MYSQLConnection.conn.prepareStatement(query);
+
             ResultSet rs = st.executeQuery(query);
 
             if (rs.next()) {
