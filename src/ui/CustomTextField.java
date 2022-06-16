@@ -31,7 +31,7 @@ public class CustomTextField extends JPasswordField {
         this.defaultColor = defaultColor;
         this.padding = padding;
         this.setLayout(null);
-        this.setBackground(null);
+        this.setBackground(new Color(255, 255, 255, 255));
 
         if (!needToHide) this.setEchoChar((char) 0);
         this.setFont(font);
@@ -41,25 +41,11 @@ public class CustomTextField extends JPasswordField {
             @Override
             public void focusGained(FocusEvent e) {
                 onFocus = true;
-                /*if(!onFocus) {
-                    textField.setForeground(new Color(139,139,139));
-                    textField.setText("Hola");
-                } else {
-                    textField.setForeground(Color.black);
-                    textField.setText("");
-                }*/
             }
 
             @Override
             public void focusLost(FocusEvent e) {
                 onFocus = false;
-                /*if(!onFocus) {
-                    textField.setForeground(new Color(139,139,139));
-                    textField.setText("Hola");
-                } else {
-                    textField.setForeground(Color.black);
-                    textField.setText("");
-                }*/
             }
         });
     }

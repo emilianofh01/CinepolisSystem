@@ -50,6 +50,10 @@ public class Employee implements Serializable {
         return password;
     }
 
+    public boolean comparePassword(String password) {
+        return password.equals(this.getPassword());
+    }
+
     public void setPassword(String password) {
         this.password = password;
     }
@@ -80,21 +84,13 @@ public class Employee implements Serializable {
                         rs.getInt("id"),
                         rs.getString("username"),
                         rs.getString("password"),
-                        rs.getBoolean("admin")
+                        rs.getBoolean("is_admin")
                 ));
             }
             st.close();
             rs.close();
         } catch (SQLException ex) {
             ex.printStackTrace();
-        } finally {
-            try {
-                conn.close();
-                st.close();
-                rs.close();
-            } catch (SQLException ex) {
-                ex.printStackTrace();
-            }
         }
 
         return employees;
@@ -114,7 +110,7 @@ public class Employee implements Serializable {
                         rs.getInt("id"),
                         rs.getString("username"),
                         rs.getString("password"),
-                        rs.getBoolean("admin")
+                        rs.getBoolean("is_admin")
                 );
             }
 
@@ -130,7 +126,7 @@ public class Employee implements Serializable {
     public static void insertPrepared(Employee e) {
         try (Connection con = MYSQLConnection.getConnection()) {
 
-            String query = "INSERT INTO employee (username, password, admin) VALUES (?,?,?)";
+            String query = "INSERT INTO employee (username, password, is_admin) VALUES (?,?,?)";
 
             PreparedStatement st = con.prepareStatement(query);
             st.setString(1, e.getUsername());
@@ -143,13 +139,6 @@ public class Employee implements Serializable {
 
         } catch (SQLException ex) {
             ex.printStackTrace();
-        } finally {
-            try {
-                con.close();
-                st.close();
-            } catch (SQLException ex) {
-                ex.printStackTrace();
-            }
         }
     }
 
