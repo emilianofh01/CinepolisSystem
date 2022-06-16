@@ -28,7 +28,6 @@ public class CustomFrame extends JFrame {
         initializeFrame();
     }
 
-
     private void initializeFrame() {
         try {
             GraphicsEnvironment ge =

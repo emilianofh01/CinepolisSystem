@@ -18,19 +18,19 @@ public class Screening {
 
     private int id;
     private int movieId;
-    private int roomId;
+    private String room;
     private Timestamp screeningStart;
 
-    public Screening(int id, int movieId, int roomId, Timestamp screeningStart) {
+    public Screening(int id, int movieId, String room, Timestamp screeningStart) {
         this.id = id;
         this.movieId = movieId;
-        this.roomId = roomId;
+        this.room = room;
         this.screeningStart = screeningStart;
     }
 
-    public Screening(int movieId, int roomId, Timestamp screeningStart) {
+    public Screening(int movieId, String room, Timestamp screeningStart) {
         this.movieId = movieId;
-        this.roomId = roomId;
+        this.room = room;
         this.screeningStart = screeningStart;
     }
 
@@ -50,12 +50,12 @@ public class Screening {
         this.movieId = movie_id;
     }
 
-    public int getRoomId() {
-        return roomId;
+    public String getRoom() {
+        return room;
     }
 
-    public void setRoomId(int room_id) {
-        this.roomId = room_id;
+    public void setRoom(String room) {
+        this.room = room;
     }
 
     public Timestamp getScreeningStart() {
@@ -71,7 +71,7 @@ public class Screening {
         return "Screening [" +
                 "id=" + id +
                 ", movie_id=" + movieId +
-                ", room_id=" + roomId +
+                ", room=" + room +
                 ", screening_start=" + screeningStart +
                 ']';
     }
@@ -88,7 +88,7 @@ public class Screening {
                 screenings.add(new Screening(
                         rs.getInt("id"),
                         rs.getInt("movie_id"),
-                        rs.getInt("room_id"),
+                        rs.getString("room"),
                         rs.getTimestamp("screening_start")
                 ));
             }
@@ -104,11 +104,11 @@ public class Screening {
     public static void insertPrepared(Screening s) {
         try (Connection conn = MYSQLConnection.getConnection()) {
 
-            String query = "INSERT INTO screening (movie_id, room_id, screening_start) VALUES (?,?,?)";
+            String query = "INSERT INTO screening (movie_id, room, screening_start) VALUES (?,?,?)";
 
             PreparedStatement st = conn.prepareStatement(query);
             st.setInt(1, s.getMovieId());
-            st.setInt(2, s.getRoomId());
+            st.setString(2, s.getRoom());
             st.setTimestamp(3, s.getScreeningStart());
 
             st.execute();
@@ -125,7 +125,7 @@ public class Screening {
 
             String query = "UPDATE screening SET "
                     + "movie_id = ?,"
-                    + "room_id = ?,"
+                    + "room = ?,"
                     + "screening_start = ?"
                     + "WHERE id = ?";
             PreparedStatement st = conn.prepareStatement(query);
@@ -153,5 +153,31 @@ public class Screening {
         } catch (SQLException ex) {
             ex.printStackTrace();
         }
+    }
+
+    public static Screening getScreening(int id) {
+        Screening screening = null;
+
+        try (Connection conn = MYSQLConnection.getConnection()) {
+            String query = "SELECT * FROM screening WHERE id = " + id;
+            Statement st = conn.prepareStatement(query);
+            ResultSet rs = st.executeQuery(query);
+
+            if (rs.next()) {
+                screening = new Screening(
+                        rs.getInt("id"),
+                        rs.getInt("movie_id"),
+                        rs.getString("room"),
+                        rs.getTimestamp("screening_start")
+                );
+            }
+
+            st.close();
+            rs.close();
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+
+        return screening;
     }
 }

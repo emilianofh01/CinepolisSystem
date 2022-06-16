@@ -19,23 +19,20 @@ public class Movie {
 
     private int id;
     private String title;
-    private String director;
     private String description;
     private int durationMin;
     private Blob cover;
 
-    public Movie(int id, String title, String director, String description, int durationMin, Blob cover) {
+    public Movie(int id, String title, String description, int durationMin, Blob cover) {
         this.id = id;
         this.title = title;
-        this.director = director;
         this.description = description;
         this.durationMin = durationMin;
         this.cover = cover;
     }
 
-    public Movie(String title, String director, String description, int durationMin, Blob cover) {
+    public Movie(String title, String description, int durationMin, Blob cover) {
         this.title = title;
-        this.director = director;
         this.description = description;
         this.durationMin = durationMin;
         this.cover = cover;
@@ -55,14 +52,6 @@ public class Movie {
 
     public void setTitle(String title) {
         this.title = title;
-    }
-
-    public String getDirector() {
-        return director;
-    }
-
-    public void setDirector(String director) {
-        this.director = director;
     }
 
     public String getDescription() {
@@ -93,7 +82,6 @@ public class Movie {
     public String toString() {
         return "Screening [id=" + id
                 + ", title=" + title
-                + ", director=" + director
                 + ", description=" + description
                 + ", duration_min=" + durationMin;
     }
@@ -110,22 +98,16 @@ public class Movie {
                 movies.add(new Movie(
                         rs.getInt("id"),
                         rs.getString("title"),
-                        rs.getString("director"),
                         rs.getString("description"),
                         rs.getInt("duration_min"),
                         rs.getBlob("cover")
                 ));
             }
+
+            st.close();
+            rs.close();
         } catch (SQLException ex) {
             ex.printStackTrace();
-        } finally {
-            try {
-                conn.close();
-                st.close();
-                rs.close();
-            } catch (SQLException ex) {
-                ex.printStackTrace();
-            }
         }
 
         return movies;
@@ -134,27 +116,19 @@ public class Movie {
     public static void insertPrepared(Movie m) {
         try (Connection conn = MYSQLConnection.getConnection()) {
 
-            String query = "INSERT INTO movie (title, director, description, duration_min, cover) VALUES (?,?,?,?,?)";
+            String query = "INSERT INTO movie (title, description, duration_min, cover) VALUES (?,?,?,?)";
 
             PreparedStatement st = conn.prepareStatement(query);
             st.setString(1, m.getTitle());
-            st.setString(2, m.getDirector());
-            st.setString(3, m.getDescription());
-            st.setInt(4, m.getDurationMin());
-            st.setBlob(5, m.getCover());
+            st.setString(2, m.getDescription());
+            st.setInt(3, m.getDurationMin());
+            st.setBlob(4, m.getCover());
 
             st.execute();
 
             st.close();
         } catch (SQLException ex) {
             ex.printStackTrace();
-        } finally {
-            try {
-                conn.close();
-                st.close();
-            } catch (SQLException ex) {
-                ex.printStackTrace();
-            }
         }
     }
 
@@ -162,7 +136,6 @@ public class Movie {
         try (Connection conn = MYSQLConnection.getConnection()) {
             String query = "UPDATE movie SET "
                     + "title = ?,"
-                    + "director = ?,"
                     + "description = ?,"
                     + "duration_min = ?,"
                     + "cover = ?"
@@ -171,11 +144,10 @@ public class Movie {
             PreparedStatement st = conn.prepareStatement(query);
 
             st.setString(1, m.getTitle());
-            st.setString(2, m.getDirector());
-            st.setString(3, m.getDescription());
-            st.setInt(4, m.getDurationMin());
-            st.setBlob(5, m.getCover());
-            st.setInt(6, m.getId());
+            st.setString(2, m.getDescription());
+            st.setInt(3, m.getDurationMin());
+            st.setBlob(4, m.getCover());
+            st.setInt(5, m.getId());
 
             st.execute();
             st.close();
@@ -194,5 +166,34 @@ public class Movie {
         } catch (SQLException ex) {
             ex.printStackTrace();
         }
+    }
+
+    public static Movie getMovie(int id) {
+        Movie movie = null;
+
+        try (Connection conn = MYSQLConnection.getConnection()) {
+
+            String query = "SELECT * FROM movie WHERE id = " + id;
+            Statement st = conn.prepareStatement(query);
+            ResultSet rs = st.executeQuery(query);
+
+            if (rs.next()) {
+                movie = new Movie(
+                        rs.getInt("id"),
+                        rs.getString("title"),
+                        rs.getString("description"),
+                        rs.getInt("duration_min"),
+                        rs.getBlob("cover")
+                );
+            }
+
+            st.close();
+            rs.close();
+
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+
+        return movie;
     }
 }

@@ -117,7 +117,10 @@ public class Employee implements Serializable {
                         rs.getBoolean("admin")
                 );
             }
-        }catch(SQLException ex) {
+
+            st.close();
+            rs.close();
+        } catch (SQLException ex) {
             ex.printStackTrace();
         }
 
@@ -169,7 +172,7 @@ public class Employee implements Serializable {
 
             st.close();
 
-        }catch(SQLException ex) {
+        } catch (SQLException ex) {
             ex.printStackTrace();
         }
     }
