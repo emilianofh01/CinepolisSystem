@@ -1,14 +1,22 @@
-package View;
+/**
+ * Ingenieria en desarrollo de software
+ * Proyecto final - Programacion III
+ * <p>
+ * Emiliano Fernandez Hernandez
+ * Kenneth De Guadalupe Quintero Valles
+ */
+
+package view;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.IOException;
 
-public class  CustomFrame extends JFrame {
-    static public Color BGCOLOR = new Color(0,32,105);
+public class CustomFrame extends JFrame {
+    static public Color BGCOLOR = new Color(0, 32, 105);
     static public Color SECOND_BG_COLOR = Color.white;
     JPanel view;
 
@@ -30,7 +38,12 @@ public class  CustomFrame extends JFrame {
             e.printStackTrace();
         }
 
-        this.setMinimumSize(new Dimension(1080,701));
+        menuBar = new JMenuBar();
+        setJMenuBar(menuBar);
+
+        this.setResizable(false);
+        this.setIconImage(new ImageIcon("src/assets/imageIcon.jpg").getImage());
+        this.setMinimumSize(new Dimension(1080, 701));
         this.setDefaultCloseOperation(EXIT_ON_CLOSE);
         this.setTitle("Cinepolis");
         this.pack();

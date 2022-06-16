@@ -1,3 +1,12 @@
+/**
+ * Ingenieria en desarrollo de software
+ * Proyecto final - Programacion III
+ * <p>
+ * Emiliano Fernandez Hernandez
+ * Kenneth De Guadalupe Quintero Valles
+ */
+
+
 package model;
 
 import db.MYSQLConnection;
@@ -59,16 +68,12 @@ public class Employee implements Serializable {
     }
 
     public static ArrayList<Employee> employeeList() {
-        ArrayList<Employee> employees = new ArrayList<Employee>();
+        ArrayList<Employee> employees = new ArrayList<>();
 
-        Connection conn = MYSQLConnection.getConnection();
-        Statement st = null;
-        ResultSet rs = null;
-
-        try {
-            st = (Statement) conn.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_READ_ONLY);
+        try (Connection conn = MYSQLConnection.getConnection()) {
             String query = "SELECT * FROM employee";
-            rs = st.executeQuery(query);
+            Statement st = conn.prepareStatement(query);
+            ResultSet rs = st.executeQuery(query);
 
             while (rs.next()) {
                 employees.add(new Employee(
@@ -78,6 +83,8 @@ public class Employee implements Serializable {
                         rs.getBoolean("admin")
                 ));
             }
+            st.close();
+            rs.close();
         } catch (SQLException ex) {
             ex.printStackTrace();
         } finally {
@@ -90,7 +97,6 @@ public class Employee implements Serializable {
             }
         }
 
-        System.out.println(employees);
         return employees;
     }
 
@@ -98,15 +104,11 @@ public class Employee implements Serializable {
 
         Employee employee = null;
 
-        Connection conn = MYSQLConnection.getConnection();
-        Statement st = null;
-        ResultSet rs = null;
+        try (Connection conn = MYSQLConnection.getConnection()) {
 
-        try {
-
-            st = (Statement) conn.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,ResultSet.CONCUR_READ_ONLY);
-            String consulta = "SELECT * FROM employee WHERE username = '" + username + "';";
-            rs = st.executeQuery(consulta);
+            String query = "SELECT * FROM employee WHERE username = '" + username + "';";
+            Statement st = conn.prepareStatement(query);
+            ResultSet rs = st.executeQuery(query);
 
             if (rs.next()) {
                 employee = new Employee(
@@ -160,17 +162,14 @@ public class Employee implements Serializable {
     }
 
     public static void update(Employee e) {
-
-        PreparedStatement st = null;
+        String query = "UPDATE employee SET "
+                + "username = ?,"
+                + " password= ?,"
+                + " is_admin = ?"
+                + " WHERE id = ?";
 
         try (Connection conn = MYSQLConnection.getConnection()) {
-
-            String query = "UPDATE employee SET "
-                    + "username = ?,"
-                    + " password= ?,"
-                    + " admin = ?"
-                    + " WHERE id = ?";
-            st = conn.prepareStatement(query);
+            PreparedStatement st = conn.prepareStatement(query);
 
             st.setString(1, e.getUsername());
             st.setString(2, e.getPassword());
@@ -179,14 +178,10 @@ public class Employee implements Serializable {
 
             st.execute();
 
+            st.close();
+
         }catch(SQLException ex) {
             ex.printStackTrace();
-        }finally {
-            try {
-                st.close();
-            }catch(SQLException ex) {
-                ex.printStackTrace();
-            }
         }
     }
 
@@ -199,8 +194,9 @@ public class Employee implements Serializable {
             st = (Statement) conn.createStatement();
             String query = "DELETE FROM employee WHERE id = " + id;
 
-            int deleted = st.executeUpdate(query);
-            System.out.println("Deleted: " + deleted);
+            st.executeUpdate(query);
+            st.close();
+
         } catch (SQLException ex) {
             ex.printStackTrace();
         } finally {

@@ -1,4 +1,13 @@
-package CustomUI;
+/**
+ * Ingenieria en desarrollo de software
+ * Proyecto final - Programacion III
+ * <p>
+ * Emiliano Fernandez Hernandez
+ * Kenneth De Guadalupe Quintero Valles
+ */
+
+
+package ui;
 
 import javax.swing.*;
 import java.awt.*;
@@ -24,14 +33,14 @@ public class RoundContainer extends JPanel {
         this.setBackground(null);
         this.roundValue = roundValue;
         this.bgColor = Color.white;
-        this.setBorder(BorderFactory.createEmptyBorder(padding.top,padding.left, padding.bottom, padding.right));
+        this.setBorder(BorderFactory.createEmptyBorder(padding.top, padding.left, padding.bottom, padding.right));
     }
 
     public RoundContainer(int roundValue, Insets padding, Color bgColor) {
         this.setBackground(null);
         this.roundValue = roundValue;
         this.bgColor = bgColor;
-        this.setBorder(BorderFactory.createEmptyBorder(padding.top,padding.left, padding.bottom, padding.right));
+        this.setBorder(BorderFactory.createEmptyBorder(padding.top, padding.left, padding.bottom, padding.right));
     }
 
     static public RoundContainer createRoundContainer(int roundValue, int top, int left, int bottom, int right) {
@@ -45,12 +54,12 @@ public class RoundContainer extends JPanel {
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
-        Graphics2D g2 = (Graphics2D)g;
+        Graphics2D g2 = (Graphics2D) g;
 
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
         g2.setColor(bgColor);
-        g2.fillRoundRect(0,0, this.getWidth(), this.getHeight(), roundValue,roundValue);
+        g2.fillRoundRect(0, 0, this.getWidth(), this.getHeight(), roundValue, roundValue);
     }
 
     public int getRoundValue() {

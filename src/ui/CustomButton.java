@@ -1,4 +1,13 @@
-package CustomUI;
+/**
+ * Ingenieria en desarrollo de software
+ * Proyecto final - Programacion III
+ * <p>
+ * Emiliano Fernandez Hernandez
+ * Kenneth De Guadalupe Quintero Valles
+ */
+
+
+package ui;
 
 import javax.swing.*;
 import java.awt.*;
@@ -13,11 +22,11 @@ public class CustomButton extends JButton {
 
     public CustomButton(String text, int radius, Color defaultBgColor, Color highlightedColor, Color foreground, Font font) {
         super(text);
-        this.defaultBgColor     = defaultBgColor;
-        this.highlightedColor   = highlightedColor;
-        this.foreground         = foreground;
-        this.radius             = radius;
-        this.font               = font;
+        this.defaultBgColor = defaultBgColor;
+        this.highlightedColor = highlightedColor;
+        this.foreground = foreground;
+        this.radius = radius;
+        this.font = font;
 
         setBorder(null);
         setForeground(foreground);
@@ -32,6 +41,12 @@ public class CustomButton extends JButton {
             }
 
             @Override
+            public void mouseExited(MouseEvent e) {
+                super.mouseExited(e);
+                onClick = false;
+            }
+
+            @Override
             public void mousePressed(MouseEvent e) {
                 super.mousePressed(e);
                 onClick = true;
@@ -41,11 +56,11 @@ public class CustomButton extends JButton {
 
     @Override
     protected void paintComponent(Graphics g) {
-        Graphics2D g2 = (Graphics2D)g;
+        Graphics2D g2 = (Graphics2D) g;
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         g2.setColor(onClick ? highlightedColor : defaultBgColor);
 
-        g2.fillRoundRect(0,0,getWidth(), getHeight(), radius,radius);
+        g2.fillRoundRect(0, 0, getWidth(), getHeight(), radius, radius);
         super.paintComponent(g);
     }
 

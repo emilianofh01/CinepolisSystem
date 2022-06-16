@@ -1,3 +1,12 @@
+/**
+ * Ingenieria en desarrollo de software
+ * Proyecto final - Programacion III
+ * <p>
+ * Emiliano Fernandez Hernandez
+ * Kenneth De Guadalupe Quintero Valles
+ */
+
+
 package db;
 
 import java.sql.Connection;
@@ -5,13 +14,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 public final class MYSQLConnection {
-    private static String driver = "com.mysql.cj.jdbc.Driver";
-    private static String database = "cinepolis-db";
-    private static String hostname = "localhost";
-    private static String port = "3306";
-    private static String username = "root";
-    private static String password = "secret";
-    private static String url = "jdbc:mysql://" + hostname + ":" + port + "/" + database + "?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC";
+    private static Connection conn = null;
 
     public static Connection getConnection() {
 

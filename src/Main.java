@@ -1,4 +1,5 @@
-import View.CustomFrame;
+import db.MYSQLConnection;
+import view.CustomFrame;
 
 public class Main {
     public static void main(String[] args) {

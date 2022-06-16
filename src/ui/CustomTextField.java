@@ -1,17 +1,28 @@
-package CustomUI;
+/**
+ * Ingenieria en desarrollo de software
+ * Proyecto final - Programacion III
+ * <p>
+ * Emiliano Fernandez Hernandez
+ * Kenneth De Guadalupe Quintero Valles
+ */
+
+
+package ui;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.beans.ConstructorProperties;
 
-public class CustomTextField extends JPanel {
+public class CustomTextField extends JPasswordField {
     private int roundValue;
     private Font font;
     private Color defaultColor;
+    private String placeholder;
 
-    private JPasswordField textField;
     private Dimension padding;
     boolean onFocus = false;
 
@@ -24,19 +35,11 @@ public class CustomTextField extends JPanel {
         this.setLayout(null);
         this.setBackground(null);
 
-        textField = new JPasswordField();
-        if(!needToHide) textField.setEchoChar((char)0);
-        textField.setFont(font);
-        textField.setBackground(defaultColor);
-        textField.setBorder(BorderFactory.createEmptyBorder(0,10,0,10));
-        /*if(!onFocus) {
-            textField.setForeground(new Color(139,139,139));
-            textField.setText("Hola");
-        } else {
-            textField.setForeground(Color.black);
-            textField.setText("");
-        }*/
-        textField.addFocusListener(new FocusListener() {
+        if (!needToHide) this.setEchoChar((char) 0);
+        this.setFont(font);
+        this.setBackground(defaultColor);
+        this.setBorder(BorderFactory.createEmptyBorder(0, 10, 0, 10));
+        this.addFocusListener(new FocusListener() {
             @Override
             public void focusGained(FocusEvent e) {
                 onFocus = true;
@@ -61,21 +64,27 @@ public class CustomTextField extends JPanel {
                 }*/
             }
         });
-        this.add(textField);
     }
 
     @Override
     protected void paintComponent(Graphics g) {
-        System.out.println("HOLA");
-        int vPadding = padding.height;
-        int hPadding = padding.width;
-
         super.paintComponent(g);
-        Graphics2D g2 = (Graphics2D)g;
 
-        g2.setColor(defaultColor);
-        g2.fillRoundRect(0,0, getWidth(), getHeight(), roundValue, roundValue);
-        textField.setBounds(hPadding,vPadding, getWidth() - hPadding*2, getHeight() - vPadding*2);
+        if (placeholder == null || placeholder.length() == 0 || String.valueOf(getPassword()).length() > 0) {
+            return;
+        }
+        final Graphics2D g2 = (Graphics2D) g;
+        g2.setRenderingHint(
+                RenderingHints.KEY_ANTIALIASING,
+                RenderingHints.VALUE_ANTIALIAS_ON);
+        g2.setColor(Color.BLACK);
+
+
+        if (!onFocus || String.valueOf(getPassword()).isEmpty()) {
+            g2.setColor(new Color(139, 139, 139));
+            g2.drawString(placeholder, getInsets().left, (g.getFontMetrics()
+                    .getMaxAscent() + getInsets().top + getHeight() / 2) - g.getFontMetrics().getHeight() / 2);
+        }
     }
 
     public int getRoundValue() {
@@ -104,12 +113,20 @@ public class CustomTextField extends JPanel {
         this.defaultColor = defaultColor;
     }
 
-    public JPasswordField getTextField() {
+    /*public JPasswordField getTextField() {
         return textField;
     }
 
     public void setTextField(JPasswordField textField) {
         this.textField = textField;
+    }*/
+
+    public void setPlaceholder(String placeholder) {
+        this.placeholder = placeholder;
+    }
+
+    public String getPlaceholder() {
+        return this.placeholder;
     }
 
     public Dimension getPadding() {

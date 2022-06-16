@@ -1,3 +1,12 @@
+/**
+ * Ingenieria en desarrollo de software
+ * Proyecto final - Programacion III
+ * <p>
+ * Emiliano Fernandez Hernandez
+ * Kenneth De Guadalupe Quintero Valles
+ */
+
+
 package model;
 
 import db.MYSQLConnection;
@@ -90,16 +99,12 @@ public class Movie {
     }
 
     public static ArrayList<Movie> movieList() {
-        ArrayList<Movie> movies = new ArrayList<Movie>();
+        ArrayList<Movie> movies = new ArrayList<>();
 
-        Connection conn = MYSQLConnection.getConnection();
-        Statement st = null;
-        ResultSet rs = null;
-
-        try {
-            st = (Statement) conn.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_READ_ONLY);
+        try (Connection conn = MYSQLConnection.getConnection()) {
             String query = "SELECT * FROM movie";
-            rs = st.executeQuery(query);
+            Statement st = conn.prepareStatement(query);
+            ResultSet rs = st.executeQuery(query);
 
             while (rs.next()) {
                 movies.add(new Movie(
@@ -127,15 +132,11 @@ public class Movie {
     }
 
     public static void insertPrepared(Movie m) {
-
-        Connection conn = MYSQLConnection.getConnection();
-        PreparedStatement st = null;
-
-        try {
+        try (Connection conn = MYSQLConnection.getConnection()) {
 
             String query = "INSERT INTO movie (title, director, description, duration_min, cover) VALUES (?,?,?,?,?)";
 
-            st = conn.prepareStatement(query);
+            PreparedStatement st = conn.prepareStatement(query);
             st.setString(1, m.getTitle());
             st.setString(2, m.getDirector());
             st.setString(3, m.getDescription());
@@ -144,6 +145,7 @@ public class Movie {
 
             st.execute();
 
+            st.close();
         } catch (SQLException ex) {
             ex.printStackTrace();
         } finally {
@@ -157,11 +159,7 @@ public class Movie {
     }
 
     public static void update(Movie m) {
-
-        PreparedStatement st = null;
-
         try (Connection conn = MYSQLConnection.getConnection()) {
-
             String query = "UPDATE movie SET "
                     + "title = ?,"
                     + "director = ?,"
@@ -169,7 +167,8 @@ public class Movie {
                     + "duration_min = ?,"
                     + "cover = ?"
                     + "WHERE id = ?";
-            st = conn.prepareStatement(query);
+
+            PreparedStatement st = conn.prepareStatement(query);
 
             st.setString(1, m.getTitle());
             st.setString(2, m.getDirector());
@@ -179,37 +178,21 @@ public class Movie {
             st.setInt(6, m.getId());
 
             st.execute();
-
+            st.close();
         } catch (SQLException ex) {
             ex.printStackTrace();
-        } finally {
-            try {
-                st.close();
-            } catch (SQLException ex) {
-                ex.printStackTrace();
-            }
         }
     }
 
     public static void delete(int id) {
-
-        Connection conn = MYSQLConnection.getConnection();
-        Statement st = null;
-
-        try {
-            st = (Statement) conn.createStatement();
+        try (Connection conn = MYSQLConnection.getConnection()) {
+            Statement st = conn.createStatement();
             String query = "DELETE FROM movie WHERE id = " + id;
 
-            int deleted = st.executeUpdate(query);
-            System.out.println("Deleted: " + deleted);
+            st.executeUpdate(query);
+            st.close();
         } catch (SQLException ex) {
             ex.printStackTrace();
-        } finally {
-            try {
-                st.close();
-            } catch (SQLException ex) {
-                ex.printStackTrace();
-            }
         }
     }
 }

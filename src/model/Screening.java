@@ -1,3 +1,12 @@
+/**
+ * Ingenieria en desarrollo de software
+ * Proyecto final - Programacion III
+ * <p>
+ * Emiliano Fernandez Hernandez
+ * Kenneth De Guadalupe Quintero Valles
+ */
+
+
 package model;
 
 import db.MYSQLConnection;
@@ -68,16 +77,12 @@ public class Screening {
     }
 
     public static ArrayList<Screening> screeningList() {
-        ArrayList<Screening> screenings = new ArrayList<Screening>();
+        ArrayList<Screening> screenings = new ArrayList<>();
 
-        Connection conn = MYSQLConnection.getConnection();
-        Statement st = null;
-        ResultSet rs = null;
-
-        try {
-            st = (Statement) conn.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_READ_ONLY);
+        try (Connection conn = MYSQLConnection.getConnection()) {
             String query = "SELECT * FROM screening";
-            rs = st.executeQuery(query);
+            Statement st = conn.prepareStatement(query);
+            ResultSet rs = st.executeQuery(query);
 
             while (rs.next()) {
                 screenings.add(new Screening(
@@ -87,99 +92,66 @@ public class Screening {
                         rs.getTimestamp("screening_start")
                 ));
             }
+            st.close();
+            rs.close();
         } catch (SQLException ex) {
             ex.printStackTrace();
-        } finally {
-            try {
-                conn.close();
-                st.close();
-                rs.close();
-            } catch (SQLException ex) {
-                ex.printStackTrace();
-            }
         }
 
         return screenings;
     }
 
     public static void insertPrepared(Screening s) {
-
-        Connection conn = MYSQLConnection.getConnection();
-        PreparedStatement st = null;
-
-        try {
+        try (Connection conn = MYSQLConnection.getConnection()) {
 
             String query = "INSERT INTO screening (movie_id, room_id, screening_start) VALUES (?,?,?)";
 
-            st = conn.prepareStatement(query);
+            PreparedStatement st = conn.prepareStatement(query);
             st.setInt(1, s.getMovieId());
             st.setInt(2, s.getRoomId());
             st.setTimestamp(3, s.getScreeningStart());
 
             st.execute();
 
+            st.close();
+
         } catch (SQLException ex) {
             ex.printStackTrace();
-        } finally {
-            try {
-                conn.close();
-                st.close();
-            } catch (SQLException ex) {
-                ex.printStackTrace();;
-            }
         }
     }
 
     public static void update(Screening s) {
-
-        PreparedStatement st = null;
-
-        try (Connection conn = MYSQLConnection.getConnection()) {
+        try (Connection conn = MYSQLConnection.getConnection()){
 
             String query = "UPDATE screening SET "
                     + "movie_id = ?,"
                     + "room_id = ?,"
                     + "screening_start = ?"
                     + "WHERE id = ?";
-            st = conn.prepareStatement(query);
+            PreparedStatement st = conn.prepareStatement(query);
 
             st.setInt(1, s.getMovieId());
-            st.setInt(2, s.getRoomId());
+            st.setString(2, s.getRoom());
             st.setTimestamp(3, s.getScreeningStart());
             st.setInt(4, s.getId());
 
-            st.execute();
-
+            st.executeUpdate();
+            st.close();
         } catch (SQLException ex) {
             ex.printStackTrace();
-        } finally {
-            try {
-                st.close();
-            } catch (SQLException ex) {
-                ex.printStackTrace();
-            }
         }
     }
 
     public static void delete(int id) {
-
-        Connection conn = MYSQLConnection.getConnection();
-        Statement st = null;
-
-        try {
-            st = (Statement) conn.createStatement();
+        try (Connection conn = MYSQLConnection.getConnection()) {
+            Statement st = conn.createStatement();
             String query = "DELETE FROM screening WHERE id = " + id;
 
-            int deleted = st.executeUpdate(query);
-            System.out.println("Deleted: " + deleted);
+            st.executeUpdate(query);
+            st.close();
+
         } catch (SQLException ex) {
             ex.printStackTrace();
-        } finally {
-            try {
-                st.close();
-            } catch (SQLException ex) {
-                ex.printStackTrace();
-            }
         }
     }
 }
