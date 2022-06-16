@@ -10,21 +10,15 @@
 package ui;
 
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
 
-import javax.swing.BorderFactory;
-import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JTable;
-import javax.swing.SwingConstants;
 import javax.swing.border.LineBorder;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableCellRenderer;
-import javax.swing.table.TableColumn;
-import javax.swing.table.TableColumnModel;
 import javax.swing.table.TableModel;
 
 public class CustomTable extends JTable {
@@ -32,16 +26,6 @@ public class CustomTable extends JTable {
     public CustomTable(TableModel model) {
         super(model);
     }
-
-//	@Override
-//	public Component prepareRenderer(TableCellRenderer renderer, int row, int column) {
-//		Component component = super.prepareRenderer(renderer, row, column);
-//		int rendererWidth = component.getPreferredSize().width;
-//		TableColumn tableColumn = getColumnModel().getColumn(column);
-//		tableColumn.setPreferredWidth(
-//				Math.max(rendererWidth + getIntercellSpacing().width, tableColumn.getPreferredWidth()));
-//		return component;
-//	}
 
     @Override
     public TableCellRenderer getDefaultRenderer(Class<?> columnClass) {

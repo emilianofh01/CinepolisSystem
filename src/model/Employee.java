@@ -101,7 +101,6 @@ public class Employee implements Serializable {
     }
 
     public static Employee getEmployee(String username) {
-
         Employee employee = null;
 
         try (Connection conn = MYSQLConnection.getConnection()) {
@@ -120,34 +119,24 @@ public class Employee implements Serializable {
             }
         }catch(SQLException ex) {
             ex.printStackTrace();
-        }finally {
-            try {
-                conn.close();
-                st.close();
-                rs.close();
-            }catch(SQLException ex) {
-                ex.printStackTrace();
-            }
         }
 
         return employee;
     }
 
     public static void insertPrepared(Employee e) {
-
-        Connection con = MYSQLConnection.getConnection();
-        PreparedStatement st = null;
-
-        try {
+        try (Connection con = MYSQLConnection.getConnection()) {
 
             String query = "INSERT INTO employee (username, password, admin) VALUES (?,?,?)";
 
-            st = con.prepareStatement(query);
+            PreparedStatement st = con.prepareStatement(query);
             st.setString(1, e.getUsername());
             st.setString(2, e.getPassword());
             st.setBoolean(3, e.isAdmin());
 
             st.execute();
+            st.close();
+
 
         } catch (SQLException ex) {
             ex.printStackTrace();
@@ -186,12 +175,8 @@ public class Employee implements Serializable {
     }
 
     public static void delete(int id) {
-
-        Connection conn = MYSQLConnection.getConnection();
-        Statement st = null;
-
-        try {
-            st = (Statement) conn.createStatement();
+        try (Connection conn = MYSQLConnection.getConnection()) {
+            Statement st = conn.createStatement();
             String query = "DELETE FROM employee WHERE id = " + id;
 
             st.executeUpdate(query);
@@ -199,12 +184,6 @@ public class Employee implements Serializable {
 
         } catch (SQLException ex) {
             ex.printStackTrace();
-        } finally {
-            try {
-                st.close();
-            } catch (SQLException ex) {
-                ex.printStackTrace();
-            }
         }
     }
 }

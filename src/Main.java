@@ -1,4 +1,3 @@
-import db.MYSQLConnection;
 import view.CustomFrame;
 
 public class Main {
