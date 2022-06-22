@@ -46,6 +46,7 @@ public class CustomFrame extends JFrame {
     }
 
     public CustomFrame(Screen initialScreen) {
+        MYSQLConnection.getConnection();
         initializeFrame();
         changeScreen(initialScreen);
     }

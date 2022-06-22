@@ -45,10 +45,10 @@ public class BillboardPanel extends AbstractCinepolisPanel {
         this.setLayout(new BorderLayout(0, 25));
         this.setBorder(BorderFactory.createEmptyBorder(25, 50, 50, 50));
 
-        JMenu option = new JMenu("Options");
+        JMenu option = new JMenu("Opciones");
 
-        logOutmenuBar = new JMenuItem("Log out");
-        updateTableMenuBar = new JMenuItem("Update table");
+        logOutmenuBar = new JMenuItem("Cerrar sesión");
+        updateTableMenuBar = new JMenuItem("Actualizar tabla");
 
         option.add(logOutmenuBar);
         option.add(updateTableMenuBar);

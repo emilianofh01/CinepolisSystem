@@ -74,10 +74,10 @@ public class Employee implements Serializable {
     public static ArrayList<Employee> employeeList() {
         ArrayList<Employee> employees = new ArrayList<>();
 
-        try (Connection conn = MYSQLConnection.getConnection()) {
+        try {
             String query = "SELECT * FROM employee";
-            Statement st = conn.prepareStatement(query);
-            ResultSet rs = st.executeQuery(query);
+            PreparedStatement st = MYSQLConnection.conn.prepareStatement(query);
+            ResultSet rs = st.executeQuery();
 
             while (rs.next()) {
                 employees.add(new Employee(
@@ -99,11 +99,13 @@ public class Employee implements Serializable {
     public static Employee getEmployee(String username) {
         Employee employee = null;
 
-        try (Connection conn = MYSQLConnection.getConnection()) {
+        try {
 
-            String query = "SELECT * FROM employee WHERE username = '" + username + "';";
-            Statement st = conn.prepareStatement(query);
-            ResultSet rs = st.executeQuery(query);
+            String query = "SELECT * FROM employee WHERE username = ?";
+            PreparedStatement st = MYSQLConnection.conn.prepareStatement(query);
+            st.setString(1, username);
+
+            ResultSet rs = st.executeQuery();
 
             if (rs.next()) {
                 employee = new Employee(
@@ -124,52 +126,48 @@ public class Employee implements Serializable {
     }
 
     public static void insertPrepared(Employee e) {
-        try (Connection con = MYSQLConnection.getConnection()) {
+        try {
 
             String query = "INSERT INTO employee (username, password, is_admin) VALUES (?,?,?)";
+            PreparedStatement st = MYSQLConnection.conn.prepareStatement(query);
 
-            PreparedStatement st = con.prepareStatement(query);
             st.setString(1, e.getUsername());
             st.setString(2, e.getPassword());
             st.setBoolean(3, e.isAdmin());
 
             st.execute();
             st.close();
-
-
         } catch (SQLException ex) {
             ex.printStackTrace();
         }
     }
 
     public static void update(Employee e) {
-        String query = "UPDATE employee SET "
-                + "username = ?,"
-                + " password= ?,"
-                + " is_admin = ?"
-                + " WHERE id = ?";
+        try {
+            String query = "UPDATE employee SET "
+                    + "username = ?,"
+                    + " password= ?,"
+                    + " is_admin = ?"
+                    + " WHERE id = ?";
 
-        try (Connection conn = MYSQLConnection.getConnection()) {
-            PreparedStatement st = conn.prepareStatement(query);
-
+            PreparedStatement st = MYSQLConnection.conn.prepareStatement(query);
             st.setString(1, e.getUsername());
             st.setString(2, e.getPassword());
             st.setBoolean(3, e.isAdmin());
             st.setInt(4, e.getId());
 
             st.execute();
-
             st.close();
-
         } catch (SQLException ex) {
             ex.printStackTrace();
         }
     }
 
     public static void delete(int id) {
-        try (Connection conn = MYSQLConnection.getConnection()) {
-            Statement st = conn.createStatement();
-            String query = "DELETE FROM employee WHERE id = " + id;
+        try {
+            String query = "DELETE FROM employee WHERE id = ?";
+            PreparedStatement st = MYSQLConnection.conn.prepareStatement(query);
+            st.setInt(1, id);
 
             st.executeUpdate(query);
             st.close();

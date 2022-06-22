@@ -89,10 +89,10 @@ public class Movie {
     public static ArrayList<Movie> movieList() {
         ArrayList<Movie> movies = new ArrayList<>();
 
-        try (Connection conn = MYSQLConnection.getConnection()) {
+        try {
             String query = "SELECT * FROM movie";
-            Statement st = conn.prepareStatement(query);
-            ResultSet rs = st.executeQuery(query);
+            PreparedStatement st = MYSQLConnection.conn.prepareStatement(query);
+            ResultSet rs = st.executeQuery();
 
             while (rs.next()) {
                 movies.add(new Movie(
@@ -114,11 +114,10 @@ public class Movie {
     }
 
     public static void insertPrepared(Movie m) {
-        try (Connection conn = MYSQLConnection.getConnection()) {
-
+        try {
             String query = "INSERT INTO movie (title, description, duration_min, cover) VALUES (?,?,?,?)";
 
-            PreparedStatement st = conn.prepareStatement(query);
+            PreparedStatement st = MYSQLConnection.conn.prepareStatement(query);
             st.setString(1, m.getTitle());
             st.setString(2, m.getDescription());
             st.setInt(3, m.getDurationMin());
@@ -133,7 +132,7 @@ public class Movie {
     }
 
     public static void update(Movie m) {
-        try (Connection conn = MYSQLConnection.getConnection()) {
+        try {
             String query = "UPDATE movie SET "
                     + "title = ?,"
                     + "description = ?,"
@@ -141,7 +140,7 @@ public class Movie {
                     + "cover = ?"
                     + "WHERE id = ?";
 
-            PreparedStatement st = conn.prepareStatement(query);
+            PreparedStatement st = MYSQLConnection.conn.prepareStatement(query);
 
             st.setString(1, m.getTitle());
             st.setString(2, m.getDescription());
@@ -157,8 +156,8 @@ public class Movie {
     }
 
     public static void delete(int id) {
-        try (Connection conn = MYSQLConnection.getConnection()) {
-            Statement st = conn.createStatement();
+        try {
+            Statement st = MYSQLConnection.conn.createStatement();
             String query = "DELETE FROM movie WHERE id = " + id;
 
             st.executeUpdate(query);
@@ -172,12 +171,11 @@ public class Movie {
         Movie movie = null;
 
         try {
-
             String query = "SELECT * FROM movie WHERE id = ?";
-            Statement st = MYSQLConnection.conn.prepareStatement(query);
+            PreparedStatement st = MYSQLConnection.conn.prepareStatement(query);
+            st.setInt(1, id);
 
-            ResultSet rs = st.executeQuery(query);
-
+            ResultSet rs = st.executeQuery();
             if (rs.next()) {
                 movie = new Movie(
                         rs.getInt("id"),

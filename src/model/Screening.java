@@ -81,10 +81,9 @@ public class Screening {
 
         try {
             String query = "SELECT * FROM screening";
-            Statement st = MYSQLConnection.conn.createStatement();
-            ResultSet rs = st.executeQuery(query);
+            PreparedStatement st = MYSQLConnection.conn.prepareStatement(query);
+            ResultSet rs = st.executeQuery();
 
-            System.out.println(rs);
             while (rs.next()) {
                 screenings.add(new Screening(
                         rs.getInt("id"),
@@ -104,33 +103,30 @@ public class Screening {
     }
 
     public static void insertPrepared(Screening s) {
-        try (Connection conn = MYSQLConnection.getConnection()) {
+        try {
 
             String query = "INSERT INTO screening (movie_id, room, screening_start) VALUES (?,?,?)";
 
-            PreparedStatement st = conn.prepareStatement(query);
+            PreparedStatement st = MYSQLConnection.conn.prepareStatement(query);
             st.setInt(1, s.getMovieId());
             st.setString(2, s.getRoom());
             st.setTimestamp(3, s.getScreeningStart());
 
             st.execute();
-
             st.close();
-
         } catch (SQLException ex) {
             ex.printStackTrace();
         }
     }
 
     public static void update(Screening s) {
-        try (Connection conn = MYSQLConnection.getConnection()){
-
+        try {
             String query = "UPDATE screening SET "
                     + "movie_id = ?,"
                     + "room = ?,"
                     + "screening_start = ?"
                     + "WHERE id = ?";
-            PreparedStatement st = conn.prepareStatement(query);
+            PreparedStatement st = MYSQLConnection.conn.prepareStatement(query);
 
             st.setInt(1, s.getMovieId());
             st.setString(2, s.getRoom());
@@ -145,11 +141,12 @@ public class Screening {
     }
 
     public static void delete(int id) {
-        try (Connection conn = MYSQLConnection.getConnection()) {
-            Statement st = conn.createStatement();
-            String query = "DELETE FROM screening WHERE id = " + id;
+        try {
+            String query = "DELETE FROM screening WHERE id = ?";
+            PreparedStatement st = MYSQLConnection.conn.prepareStatement(query);
+            st.setInt(1, id);
 
-            st.executeUpdate(query);
+            st.executeUpdate();
             st.close();
 
         } catch (SQLException ex) {
@@ -160,10 +157,12 @@ public class Screening {
     public static Screening getScreening(int id) {
         Screening screening = null;
 
-        try (Connection conn = MYSQLConnection.getConnection()) {
-            String query = "SELECT * FROM screening WHERE id = " + id;
-            Statement st = conn.prepareStatement(query);
-            ResultSet rs = st.executeQuery(query);
+        try {
+            String query = "SELECT * FROM screening WHERE id = ?";
+            PreparedStatement st = MYSQLConnection.conn.prepareStatement(query);
+            st.setInt(1,id);
+
+            ResultSet rs = st.executeQuery();
 
             if (rs.next()) {
                 screening = new Screening(
