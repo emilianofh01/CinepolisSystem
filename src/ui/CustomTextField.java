@@ -32,43 +32,44 @@ public class CustomTextField extends JPasswordField {
         this.padding = padding;
         this.setLayout(null);
         this.setBackground(new Color(255, 255, 255, 255));
+        this.setBackground(defaultColor);
 
-        if (!needToHide) this.setEchoChar((char) 0);
+        if (!needToHide) setEchoChar((char) 0);
         this.setFont(font);
         this.setBackground(defaultColor);
         this.setBorder(BorderFactory.createEmptyBorder(0, 10, 0, 10));
+
         this.addFocusListener(new FocusListener() {
             @Override
             public void focusGained(FocusEvent e) {
-                onFocus = true;
+                setOnFocus(true);
             }
 
             @Override
             public void focusLost(FocusEvent e) {
-                onFocus = false;
+                setOnFocus(false);
             }
         });
     }
 
     @Override
     protected void paintComponent(Graphics g) {
-        super.paintComponent(g);
-
-        if (placeholder == null || placeholder.length() == 0 || String.valueOf(getPassword()).length() > 0) {
-            return;
-        }
         final Graphics2D g2 = (Graphics2D) g;
         g2.setRenderingHint(
                 RenderingHints.KEY_ANTIALIASING,
                 RenderingHints.VALUE_ANTIALIAS_ON);
         g2.setColor(Color.BLACK);
 
+        setOpaque(false);
+        g2.setColor(this.defaultColor);
+        g2.fillRoundRect(0,0, getWidth()-1, getHeight()-1, getRoundValue(), getRoundValue());
 
-        if (!onFocus || String.valueOf(getPassword()).isEmpty()) {
+        if ((!onFocus && String.valueOf(getPassword()).isEmpty()) || String.valueOf(getPassword()).isEmpty()) {
             g2.setColor(new Color(139, 139, 139));
             g2.drawString(placeholder, getInsets().left, (g.getFontMetrics()
                     .getMaxAscent() + getInsets().top + getHeight() / 2) - g.getFontMetrics().getHeight() / 2);
         }
+        super.paintComponent(g);
     }
 
     public int getRoundValue() {
@@ -96,14 +97,6 @@ public class CustomTextField extends JPasswordField {
     public void setDefaultColor(Color defaultColor) {
         this.defaultColor = defaultColor;
     }
-
-    /*public JPasswordField getTextField() {
-        return textField;
-    }
-
-    public void setTextField(JPasswordField textField) {
-        this.textField = textField;
-    }*/
 
     public void setPlaceholder(String placeholder) {
         this.placeholder = placeholder;

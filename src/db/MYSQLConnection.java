@@ -18,7 +18,7 @@ public final class MYSQLConnection {
 
     public static Connection getConnection() {
         String driver = "com.mysql.cj.jdbc.Driver";
-        String database = "cinepolis-db";
+        String database = "cinepolis";
         String hostname = "localhost";
         String port = "3306";
         String username = "root";
