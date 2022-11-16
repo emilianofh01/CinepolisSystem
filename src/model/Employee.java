@@ -12,50 +12,80 @@ package model;
 import db.MYSQLConnection;
 
 import java.io.Serializable;
+import java.math.BigInteger;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.sql.*;
 import java.util.ArrayList;
 
 public class Employee implements Serializable {
-    private int id;
-    private String username;
-    private String password;
+    private Blob id;
+    private String nombre, apPaterno, apMaterno, rfc, email, usuario, apswrd;
+    private Timestamp fechaNacimiento;
     private boolean admin;
 
-    public Employee(int id, String username, String password, Boolean admin) {
+    public Employee(Blob id,
+                    String nombre,
+                    String apPaterno,
+                    String apMaterno,
+                    Timestamp fechaNacimiento,
+                    String rfc,
+                    String email,
+                    String usuario,
+                    String apswrd,
+                    Boolean admin
+    ) {
         this.id = id;
-        this.username = username;
-        this.password = password;
+        this.nombre = nombre;
+        this.apPaterno = apPaterno;
+        this.apMaterno = apMaterno;
+        this.fechaNacimiento = fechaNacimiento;
+        this.rfc = rfc;
+        this.email = email;
+        this.usuario = usuario;
+        this.apswrd = apswrd;
         this.admin = admin;
     }
 
-    public Employee(String username, String password, Boolean admin) {
-        this.username = username;
-        this.password = password;
+    public Employee(String username,
+                    String password,
+                    Boolean admin) {
+        this.usuario = username;
+        this.usuario = password;
         this.admin = admin;
     }
 
-    public int getId() {
+    public Blob getId() {
         return id;
     }
 
     public String getUsername() {
-        return username;
+        return usuario;
     }
 
     public void setUsername(String username) {
-        this.username = username;
+        this.usuario = username;
     }
 
     private String getPassword() {
-        return password;
+        return apswrd;
     }
 
-    public boolean comparePassword(String password) {
-        return password.equals(this.getPassword());
+    public boolean comparePassword(String password) throws NoSuchAlgorithmException {
+        return sha2(password).equals(getPassword());
+    }
+
+    private String sha2(String input) throws NoSuchAlgorithmException {
+        MessageDigest digest = MessageDigest.getInstance("SHA-256");
+        digest.reset();
+        digest.update(input.getBytes(StandardCharsets.UTF_8));
+
+        return String.format("%064x", new BigInteger(1,digest.digest()));
     }
 
     public void setPassword(String password) {
-        this.password = password;
+        this.apswrd = password;
     }
 
     public boolean isAdmin() {
@@ -68,23 +98,29 @@ public class Employee implements Serializable {
 
     @Override
     public String toString() {
-        return "Employee [id=" + id + ", username=" + username + "]";
+        return "Employee [id=" + id + ", username=" + usuario + "]";
     }
 
     public static ArrayList<Employee> employeeList() {
         ArrayList<Employee> employees = new ArrayList<>();
 
         try {
-            String query = "SELECT * FROM employee";
+            String query = "SELECT * FROM empleados";
             PreparedStatement st = MYSQLConnection.conn.prepareStatement(query);
             ResultSet rs = st.executeQuery();
 
             while (rs.next()) {
                 employees.add(new Employee(
-                        rs.getInt("id"),
-                        rs.getString("username"),
-                        rs.getString("password"),
-                        rs.getBoolean("is_admin")
+                        rs.getBlob("id"),
+                        rs.getString("nombre"),
+                        rs.getString("apellidoPaterno"),
+                        rs.getString("apellidoMaterno"),
+                        rs.getTimestamp("fechaNacimiento"),
+                        rs.getString("rfc"),
+                        rs.getString("email"),
+                        rs.getString("usuario"),
+                        rs.getString("apswrd"),
+                        rs.getBoolean("isAdmin")
                 ));
             }
             st.close();
@@ -101,7 +137,7 @@ public class Employee implements Serializable {
 
         try {
 
-            String query = "SELECT * FROM employee WHERE username = ?";
+            String query = "SELECT * FROM empleados WHERE usuario = ?";
             PreparedStatement st = MYSQLConnection.conn.prepareStatement(query);
             st.setString(1, username);
 
@@ -109,10 +145,16 @@ public class Employee implements Serializable {
 
             if (rs.next()) {
                 employee = new Employee(
-                        rs.getInt("id"),
-                        rs.getString("username"),
-                        rs.getString("password"),
-                        rs.getBoolean("is_admin")
+                        rs.getBlob("id"),
+                        rs.getString("nombre"),
+                        rs.getString("apellidoPaterno"),
+                        rs.getString("apellidoMaterno"),
+                        rs.getTimestamp("fechaNacimiento"),
+                        rs.getString("rfc"),
+                        rs.getString("email"),
+                        rs.getString("usuario"),
+                        rs.getString("apswrd"),
+                        rs.getBoolean("isAdmin")
                 );
             }
 
@@ -128,7 +170,7 @@ public class Employee implements Serializable {
     public static void insertPrepared(Employee e) {
         try {
 
-            String query = "INSERT INTO employee (username, password, is_admin) VALUES (?,?,?)";
+            String query = "INSERT INTO empleados (username, password, is_admin) VALUES (?,?,?)";
             PreparedStatement st = MYSQLConnection.conn.prepareStatement(query);
 
             st.setString(1, e.getUsername());
@@ -154,7 +196,7 @@ public class Employee implements Serializable {
             st.setString(1, e.getUsername());
             st.setString(2, e.getPassword());
             st.setBoolean(3, e.isAdmin());
-            st.setInt(4, e.getId());
+            st.setBlob(4, e.getId());
 
             st.execute();
             st.close();
@@ -165,7 +207,7 @@ public class Employee implements Serializable {
 
     public static void delete(int id) {
         try {
-            String query = "DELETE FROM employee WHERE id = ?";
+            String query = "DELETE FROM empleados WHERE id = ?";
             PreparedStatement st = MYSQLConnection.conn.prepareStatement(query);
             st.setInt(1, id);
 

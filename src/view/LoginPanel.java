@@ -26,7 +26,7 @@ import java.io.IOException;
 public class LoginPanel extends AbstractCinepolisPanel {
     public CustomTextField userNameField;
     public CustomTextField passwordField;
-    public CustomButton loginBtn;
+    public CustomButton loginBtn, tryAgainBtn;
 
     public LoginPanel(CustomFrame frame) {
         super(frame);
@@ -67,13 +67,15 @@ public class LoginPanel extends AbstractCinepolisPanel {
         JPanel formContainer = new JPanel();
         formContainer.setBackground(CustomFrame.SECOND_BG_COLOR);
         formContainer.setLayout(new BoxLayout(formContainer, BoxLayout.Y_AXIS));
+        //formContainer.setBackground(Color.red);
         Dimension formSize = formContainer.getPreferredSize();
         formSize.width = 400;
         formContainer.setPreferredSize(formSize);
 
-        formContainer.add(Box.createVerticalGlue());
         // NO CONNECTION
         if(MYSQLConnection.conn != null) {
+            formContainer.add(Box.createVerticalGlue());
+
             JLabel titleLogin = new JLabel("Iniciar sesión", SwingConstants.CENTER);
             titleLogin.setAlignmentX(.5f);
             titleLogin.setFont(new Font("Montserrat", Font.BOLD, 23));
@@ -114,20 +116,39 @@ public class LoginPanel extends AbstractCinepolisPanel {
 
             formContainer.add(Box.createVerticalGlue());
 
-            LoginController.initiate(this);
         } else {
             System.out.println(MYSQLConnection.conn);
+
+            JLabel titleLogin = new JLabel("No se pudo establecer conexión", SwingConstants.CENTER);
+            //titleLogin.setAlignmentX(.5f);
+            titleLogin.setFont(new Font("Montserrat", Font.BOLD, 23));
+            titleLogin.setMaximumSize(new Dimension(Integer.MAX_VALUE, titleLogin.getMinimumSize().height));
+            titleLogin.setForeground(CustomFrame.BGCOLOR);
+            formContainer.add(titleLogin);
+
             try {
-                Image noConnectionImg = ImageIO.read(new File("src/Assets/no-connection.jpg"));
-                noConnectionImg = noConnectionImg.getScaledInstance(200,200, Image.SCALE_SMOOTH);
+                int imgWidth = 400, imgHeight = 279;
+                Image noConnectionImg = ImageIO.read(new File("src/Assets/no-connection.png"));
+                noConnectionImg = noConnectionImg.getScaledInstance(imgWidth,imgHeight, Image.SCALE_SMOOTH);
+
                 JLabel l = new JLabel(new ImageIcon(noConnectionImg));
-                l.setPreferredSize(new Dimension(250,250));
+                l.setPreferredSize(new Dimension(imgWidth,imgHeight));
 
                 formContainer.add(l);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
+            formContainer.add(Box.createVerticalStrut(50));
+
+            Font textFieldFont = new Font("Montserrat", Font.BOLD, 16);
+            tryAgainBtn = new CustomButton("Reintentar", 15, CustomFrame.BGCOLOR, new Color(0, 25, 81),
+                    Color.white, textFieldFont);
+            tryAgainBtn.setPreferredSize(new Dimension(Integer.MAX_VALUE, 40));
+            tryAgainBtn.setMaximumSize(new Dimension(Integer.MAX_VALUE, 40));
+            formContainer.add(tryAgainBtn);
         }
+
+        LoginController.initiate(this);
 
         c.gridx = 1;
         c.weighty = 0;
@@ -147,6 +168,11 @@ public class LoginPanel extends AbstractCinepolisPanel {
     public void logIn(Employee employee) {
         parentFrame.setLoggedEmployee(employee);
         parentFrame.changeScreen(CustomFrame.Screen.BILLBOARD);
+    }
+
+    public void tryAgain() {
+        MYSQLConnection.getConnection();
+        parentFrame.changeScreen(CustomFrame.Screen.LOG_IN);
     }
 
     @Override
