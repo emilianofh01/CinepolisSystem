@@ -9,7 +9,10 @@
 
 package ui;
 
+import view.CustomFrame;
+
 import javax.swing.*;
+import javax.swing.border.StrokeBorder;
 import java.awt.*;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
@@ -68,6 +71,14 @@ public class CustomTextField extends JPasswordField {
             g2.setColor(new Color(139, 139, 139));
             g2.drawString(placeholder, getInsets().left, (g.getFontMetrics()
                     .getMaxAscent() + getInsets().top + getHeight() / 2) - g.getFontMetrics().getHeight() / 2);
+        }
+        if(onFocus) {
+            g2.setColor(CustomFrame.BGCOLOR);
+            //g2.setStroke(new BasicStroke(1));
+            for (int i = 1; i < 4; i++) {
+                g2.drawRoundRect(i,i, getWidth()-(i*2), getHeight()-(i*2), getRoundValue() - (i*3),getRoundValue() - (i*3));
+            }
+            repaint();
         }
         super.paintComponent(g);
     }

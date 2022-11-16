@@ -120,7 +120,6 @@ public class LoginPanel extends AbstractCinepolisPanel {
             System.out.println(MYSQLConnection.conn);
 
             JLabel titleLogin = new JLabel("No se pudo establecer conexión", SwingConstants.CENTER);
-            //titleLogin.setAlignmentX(.5f);
             titleLogin.setFont(new Font("Montserrat", Font.BOLD, 23));
             titleLogin.setMaximumSize(new Dimension(Integer.MAX_VALUE, titleLogin.getMinimumSize().height));
             titleLogin.setForeground(CustomFrame.BGCOLOR);

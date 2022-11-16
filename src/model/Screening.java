@@ -16,12 +16,12 @@ import java.util.ArrayList;
 
 public class Screening {
 
-    private int id;
-    private int movieId;
-    private String room;
-    private Timestamp screeningStart;
+    private int id,clasificacionId, duracionMin, generoId, directorId;
+    private String tituloCartelera, tituloOriginal, sinopsis, trailerURL;
 
-    public Screening(int id, int movieId, String room, Timestamp screeningStart) {
+    public Screening(
+            
+    ) {
         this.id = id;
         this.movieId = movieId;
         this.room = room;
@@ -80,7 +80,7 @@ public class Screening {
         ArrayList<Screening> screenings = new ArrayList<>();
 
         try {
-            String query = "SELECT * FROM screening";
+            String query = "SELECT * FROM peliculas";
             PreparedStatement st = MYSQLConnection.conn.prepareStatement(query);
             ResultSet rs = st.executeQuery();
 
@@ -105,7 +105,7 @@ public class Screening {
     public static void insertPrepared(Screening s) {
         try {
 
-            String query = "INSERT INTO screening (movie_id, room, screening_start) VALUES (?,?,?)";
+            String query = "INSERT INTO peliculas (movie_id, room, screening_start) VALUES (?,?,?)";
 
             PreparedStatement st = MYSQLConnection.conn.prepareStatement(query);
             st.setInt(1, s.getMovieId());
@@ -121,7 +121,7 @@ public class Screening {
 
     public static void update(Screening s) {
         try {
-            String query = "UPDATE screening SET "
+            String query = "UPDATE peliculas SET "
                     + "movie_id = ?,"
                     + "room = ?,"
                     + "screening_start = ?"
@@ -142,7 +142,7 @@ public class Screening {
 
     public static void delete(int id) {
         try {
-            String query = "DELETE FROM screening WHERE id = ?";
+            String query = "DELETE FROM peliculas WHERE id = ?";
             PreparedStatement st = MYSQLConnection.conn.prepareStatement(query);
             st.setInt(1, id);
 
@@ -158,7 +158,7 @@ public class Screening {
         Screening screening = null;
 
         try {
-            String query = "SELECT * FROM screening WHERE id = ?";
+            String query = "SELECT * FROM peliculas WHERE id = ?";
             PreparedStatement st = MYSQLConnection.conn.prepareStatement(query);
             st.setInt(1,id);
 
