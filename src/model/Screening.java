@@ -10,28 +10,41 @@
 package model;
 
 import db.MYSQLConnection;
+import view.CustomFrame;
 
+import javax.swing.*;
+import java.math.BigDecimal;
 import java.sql.*;
 import java.util.ArrayList;
 
 public class Screening {
-
-    private int id,clasificacionId, duracionMin, generoId, directorId;
-    private String tituloCartelera, tituloOriginal, sinopsis, trailerURL;
+    int id;
+    int idSala;
+    int idPelicula;
+    String tipoEmision;
+    BigDecimal costo;
+    Timestamp fechaHora;
 
     public Screening(
-            
+            int id,
+            int idSala,
+            int idPelicula,
+            String tipoEmision,
+            BigDecimal costo,
+            Timestamp fechaHora
     ) {
         this.id = id;
-        this.movieId = movieId;
-        this.room = room;
-        this.screeningStart = screeningStart;
+        this.idSala = idSala;
+        this.idPelicula = idPelicula;
+        this.tipoEmision = tipoEmision;
+        this.costo = costo;
+        this.fechaHora = fechaHora;
     }
 
-    public Screening(int movieId, String room, Timestamp screeningStart) {
-        this.movieId = movieId;
-        this.room = room;
-        this.screeningStart = screeningStart;
+    public Screening(int idPelicula, int idSala, Timestamp fechaHora) {
+        this.idPelicula = idPelicula;
+        this.idSala = idSala;
+        this.fechaHora = fechaHora;
     }
 
     public int getId() {
@@ -43,36 +56,36 @@ public class Screening {
     }
 
     public int getMovieId() {
-        return movieId;
+        return idPelicula;
     }
 
     public void setMovie_id(int movie_id) {
-        this.movieId = movie_id;
+        this.idPelicula = movie_id;
     }
 
-    public String getRoom() {
-        return room;
+    public int getRoom() {
+        return idSala;
     }
 
-    public void setRoom(String room) {
-        this.room = room;
+    public void setRoom(int sala) {
+        this.idSala = sala;
     }
 
     public Timestamp getScreeningStart() {
-        return screeningStart;
+        return fechaHora;
     }
 
     public void setScreeningStart(Timestamp screeningStart) {
-        this.screeningStart = screeningStart;
+        this.fechaHora = screeningStart;
     }
 
     @Override
     public String toString() {
         return "Screening [" +
                 "id=" + id +
-                ", movie_id=" + movieId +
-                ", room=" + room +
-                ", screening_start=" + screeningStart +
+                ", movie_id=" + idPelicula +
+                ", room=" + idSala +
+                ", screening_start=" + fechaHora +
                 ']';
     }
 
@@ -80,16 +93,18 @@ public class Screening {
         ArrayList<Screening> screenings = new ArrayList<>();
 
         try {
-            String query = "SELECT * FROM peliculas";
+            String query = "SELECT * FROM horarios WHERE fechaHora >= NOW()";
             PreparedStatement st = MYSQLConnection.conn.prepareStatement(query);
             ResultSet rs = st.executeQuery();
 
             while (rs.next()) {
                 screenings.add(new Screening(
                         rs.getInt("id"),
-                        rs.getInt("movie_id"),
-                        rs.getString("room"),
-                        rs.getTimestamp("screening_start")
+                        rs.getInt("idSala"),
+                        rs.getInt("idPelicula"),
+                        rs.getString("tipoEmision"),
+                        rs.getBigDecimal("costo"),
+                        rs.getTimestamp("fechaHora")
                 ));
             }
 
@@ -99,50 +114,54 @@ public class Screening {
             ex.printStackTrace();
         }
 
+
         return screenings;
     }
 
-    public static void insertPrepared(Screening s) {
+    public static boolean insertPrepared(Screening s) {
         try {
 
-            String query = "INSERT INTO peliculas (movie_id, room, screening_start) VALUES (?,?,?)";
+            String query = "{CALL spInsertarHorario(?, ?, ?)}";
 
-            PreparedStatement st = MYSQLConnection.conn.prepareStatement(query);
-            st.setInt(1, s.getMovieId());
-            st.setString(2, s.getRoom());
+            CallableStatement st = MYSQLConnection.conn.prepareCall(query);
+            st.setInt(1, s.getRoom());
+            st.setInt(2, s.getMovieId());
             st.setTimestamp(3, s.getScreeningStart());
+
+            st.execute();
+            st.close();
+        } catch (SQLException ex) {
+            if(ex.getSQLState().equals("45000")) {
+                return false;
+            }
+            ex.printStackTrace();
+        }
+        return true;
+    }
+
+    public static void update(Screening s) {
+        System.out.println(s.getMovieId() + " "+ s.getRoom()+ " "+ s.getScreeningStart()+ " ");
+        try {
+            String query = "{CALL spActualizarHorarios(?,?, ?, ?)}";
+            CallableStatement st = MYSQLConnection.conn.prepareCall(query);
+
+            st.setInt(1, s.getId());
+            st.setInt(2, s.getMovieId());
+            st.setString(3, String.valueOf(s.getRoom() + 1));
+            st.setTimestamp(4, s.getScreeningStart());
 
             st.execute();
             st.close();
         } catch (SQLException ex) {
             ex.printStackTrace();
         }
-    }
 
-    public static void update(Screening s) {
-        try {
-            String query = "UPDATE peliculas SET "
-                    + "movie_id = ?,"
-                    + "room = ?,"
-                    + "screening_start = ?"
-                    + "WHERE id = ?";
-            PreparedStatement st = MYSQLConnection.conn.prepareStatement(query);
 
-            st.setInt(1, s.getMovieId());
-            st.setString(2, s.getRoom());
-            st.setTimestamp(3, s.getScreeningStart());
-            st.setInt(4, s.getId());
-
-            st.executeUpdate();
-            st.close();
-        } catch (SQLException ex) {
-            ex.printStackTrace();
-        }
     }
 
     public static void delete(int id) {
         try {
-            String query = "DELETE FROM peliculas WHERE id = ?";
+            String query = "DELETE FROM horarios WHERE id = ?";
             PreparedStatement st = MYSQLConnection.conn.prepareStatement(query);
             st.setInt(1, id);
 
@@ -158,7 +177,7 @@ public class Screening {
         Screening screening = null;
 
         try {
-            String query = "SELECT * FROM peliculas WHERE id = ?";
+            String query = "SELECT * FROM horarios WHERE id = ?";
             PreparedStatement st = MYSQLConnection.conn.prepareStatement(query);
             st.setInt(1,id);
 
@@ -167,9 +186,11 @@ public class Screening {
             if (rs.next()) {
                 screening = new Screening(
                         rs.getInt("id"),
-                        rs.getInt("movie_id"),
-                        rs.getString("room"),
-                        rs.getTimestamp("screening_start")
+                        rs.getInt("idSala"),
+                        rs.getInt("idPelicula"),
+                        rs.getString("tipoEmision"),
+                        rs.getBigDecimal("costo"),
+                        rs.getTimestamp("fechaHora")
                 );
             }
 

@@ -24,7 +24,7 @@ import java.util.Calendar;
 public class ScreeningForm extends AbstractCinepolisPanel {
     public CustomFrame parentFrame;
     public JTextField screeningId;
-    public JTextField screeningRoom;
+    public JComboBox<String> screeningRoom;
     public JSpinner screeningStart;
     public JComboBox<String> screeningMovieId;
 
@@ -38,19 +38,19 @@ public class ScreeningForm extends AbstractCinepolisPanel {
     @Override
     public void init() {
         //screeningId = new JTextField(10);
-        screeningRoom = new JTextField(10);
+        screeningRoom = new JComboBox<>();
         screeningStart = new JSpinner();
         screeningMovieId = new JComboBox<>();
 
         SpinnerDateModel ScreeningModel = new SpinnerDateModel();
         ScreeningModel.setCalendarField(Calendar.MINUTE);
         screeningStart.setModel(ScreeningModel);
-        screeningStart.setEditor(new JSpinner.DateEditor(screeningStart, "h:mm a"));
+        screeningStart.setEditor(new JSpinner.DateEditor(screeningStart, "yyyy-MM-dd HH:mm:ss"));
 
         SpinnerDateModel movieModel = new SpinnerDateModel();
         movieModel.setCalendarField(Calendar.MINUTE);
 
-        final String[] labelsInputsScreening = new String[]{"Movie", "Room", "Screening start time"};
+        final String[] labelsInputsScreening = new String[]{"Pelicula", "Sala", "Fecha y hora de inicio"};
         Object[] inputsScreening = new Object[]{screeningMovieId, screeningRoom, screeningStart};
 
         this.setBackground(CustomFrame.BGCOLOR);
@@ -78,25 +78,32 @@ public class ScreeningForm extends AbstractCinepolisPanel {
 
         // Left -> Screening form
         JPanel screeningForm = new JPanel();
+        screeningForm.setBackground(Color.white);
         screeningForm.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
         screeningForm.setLayout(new SpringLayout());
 
         for (int i = 0; i < labelsInputsScreening.length; i++) {
             JLabel l = new JLabel(labelsInputsScreening[i]);
+            l.setMaximumSize(new Dimension(l.getPreferredSize().width, 5));
             l.setFont(new Font("Montserrat", Font.BOLD, 15));
             screeningForm.add(l);
 
             if (inputsScreening[i] instanceof JTextField obj) {
                 obj.setFont(new Font("Montserrat", Font.BOLD, 15));
-                obj.setMaximumSize(new Dimension(obj.getPreferredSize().width, 20));
+
+                //obj.setMaximumSize(new Dimension(obj.getPreferredSize().width, 5));
                 screeningForm.add(obj);
             } else if (inputsScreening[i] instanceof JSpinner obj) {
                 obj.setFont(new Font("Montserrat", Font.BOLD, 15));
-                obj.setMaximumSize(new Dimension(obj.getPreferredSize().width, 20));
+                obj.setBorder(BorderFactory.createEmptyBorder(20,20,20,20));
+                obj.setBackground(Color.white);
+                //obj.setMaximumSize(new Dimension(50, 15));
                 screeningForm.add(obj);
             } else if (inputsScreening[i] instanceof JComboBox<?> obj) {
                 obj.setFont(new Font("Montserrat", Font.BOLD, 15));
-                obj.setMaximumSize(new Dimension(obj.getPreferredSize().width, 20));
+                obj.setBorder(BorderFactory.createEmptyBorder(20,20,20,20));
+                obj.setBackground(Color.white);
+                //obj.setMaximumSize(new Dimension(obj.getPreferredSize().width, 15));
                 screeningForm.add(obj);
             }
         }

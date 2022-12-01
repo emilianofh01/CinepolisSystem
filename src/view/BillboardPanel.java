@@ -24,7 +24,7 @@ import java.io.File;
 import java.io.IOException;
 
 public class BillboardPanel extends AbstractCinepolisPanel {
-    static public final String[] cabeceras = new String[]{"ID", "P", "Nombre de la pelicula", "Horario", "Sala", "Descripcion"};
+    static public final String[] cabeceras = new String[]{"ID", "P", "Nombre de la pelicula", "Sala", "Inicia", "Termina"};
     public CustomTableModel tableModel;
     public CustomTable tabla;
 

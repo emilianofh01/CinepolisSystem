@@ -20,10 +20,16 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
 import java.sql.Blob;
 import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
 public class BillboardPanelController {
     public static void initiate(BillboardPanel panel) {
@@ -96,27 +102,41 @@ public class BillboardPanelController {
         SimpleDateFormat format = new SimpleDateFormat("h:mm a");
         ArrayList<Screening> list = Screening.screeningList();
 
+
+
         list.forEach((s) -> {
             Movie m = Movie.getMovie(s.getMovieId());
 
-            Blob imageBlob = m.getCover();
-            byte[] imageByte;
+            URL trailerUrl = m.getTrailerURL();
             ImageIcon icon;
             try {
-                imageByte = imageBlob.getBytes(1, (int) imageBlob.length());
-                InputStream is = new ByteArrayInputStream(imageByte);
-                Image image = ImageIO.read(is);
-                icon = new ImageIcon(image.getScaledInstance(100, 125, Image.SCALE_SMOOTH));
-            } catch (SQLException | IOException e) {
+                BufferedImage image = ImageIO.read(trailerUrl);
+
+                icon = new ImageIcon(image);
+                icon = new ImageIcon(icon.getImage().getScaledInstance(100,125, Image.SCALE_SMOOTH));
+
+            } catch (IOException e) {
                 throw new RuntimeException(e);
             }
+
+
+            Calendar cal = Calendar.getInstance();
+            try {
+                Date d = format.parse(format.format(s.getScreeningStart()));
+                cal.setTime(d);
+            } catch (ParseException e) {
+                throw new RuntimeException(e);
+            }
+            cal.add(Calendar.MINUTE, m.getDuracionMin());
+
+
             panel.tableModel.addRow(new Object[]{
                     s.getId(),
                     icon,
-                    m.getTitle(),
-                    format.format(s.getScreeningStart()),
+                    m.getTituloCartelera(),
                     s.getRoom(),
-                    m.getDescription()
+                    format.format(s.getScreeningStart()),
+                    format.format(cal.getTime())
             });
         });
     }
