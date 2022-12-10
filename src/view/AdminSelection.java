@@ -1,9 +1,10 @@
 package view;
 
-import controller.BillboardPanelController;
-import model.CustomTableModel;
-import model.Movie;
-import ui.*;
+import controller.AdminSelectionController;
+import ui.CustomButton;
+import ui.CustomScrollPane;
+import ui.CustomTextField;
+import ui.RoundContainer;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -11,19 +12,16 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.net.URL;
-import java.util.ArrayList;
 
-public class BillboardPanel extends AbstractCinepolisPanel{
-
+public class AdminSelection extends AbstractCinepolisPanel{
     public JMenuItem logOutmenuBar, updateTableMenuBar;
     public CustomButton backBtn;
-    public CustomTextField searchBar;
-    public GroupMovie movieList;
-    public CustomScrollPane scroll;
+    public CustomButton goToBillboard;
+    public CustomButton goToScreaning;
 
-    public BillboardPanel(CustomFrame parentFrame) {
+    public AdminSelection(CustomFrame parentFrame) {
         super(parentFrame);
+
     }
 
     @Override
@@ -32,15 +30,15 @@ public class BillboardPanel extends AbstractCinepolisPanel{
         this.setLayout(new BorderLayout(0, 15));
         this.setBorder(BorderFactory.createEmptyBorder(25, 50, 50, 50));
 
-        JMenu option = new JMenu("Opciones");
+        //JMenu option = new JMenu("Opciones");
 
-        logOutmenuBar = new JMenuItem("Cerrar sesión");
-        updateTableMenuBar = new JMenuItem("Actualizar cartelera");
+        //logOutmenuBar = new JMenuItem("Cerrar sesión");
+        //updateTableMenuBar = new JMenuItem("Actualizar cartelera");
 
-        option.add(logOutmenuBar);
-        option.add(updateTableMenuBar);
+        //option.add(logOutmenuBar);
+        //option.add(updateTableMenuBar);
 
-        parentFrame.menuBar.add(option);
+        //parentFrame.menuBar.add(option);
 
         // NORTH
         JPanel northContainer = new JPanel();
@@ -69,8 +67,8 @@ public class BillboardPanel extends AbstractCinepolisPanel{
 
         JPanel wrapBackBtn = new JPanel();
         wrapBackBtn.setBackground(CustomFrame.BGCOLOR);
-        backBtn = new CustomButton("Volver", 40, new Color(243,127,127),
-                                    new Color(176,92,92), Color.WHITE, new Font("Montserrat", Font.BOLD, 15));
+        backBtn = new CustomButton("Cerrar sesion", 40, new Color(243,127,127),
+                new Color(176,92,92), Color.WHITE, new Font("Montserrat", Font.BOLD, 15));
         backBtn.setPreferredSize(new Dimension(125, 40));
 
         wrapBackBtn.add(backBtn);
@@ -82,41 +80,31 @@ public class BillboardPanel extends AbstractCinepolisPanel{
 
         // CENTER (CONTENT)
         RoundContainer billboardContainer = new RoundContainer(45);
-        billboardContainer.setBorder(BorderFactory.createEmptyBorder(20, 30, 0, 30));
-        billboardContainer.setLayout(new BorderLayout(0, 10));
+        billboardContainer.setBorder(BorderFactory.createEmptyBorder(20, 30, 20, 30));
+        billboardContainer.setLayout(new BorderLayout(0, 20));
 
-            // TITLE
-        JPanel titleContainer = new JPanel();
-        titleContainer.setBackground(CustomFrame.SECOND_BG_COLOR);
-        titleContainer.setLayout(new BorderLayout());
+        JPanel container = new JPanel();
+        container.setLayout(new GridLayout(1,2, 10,10));
 
-        JLabel frameTitle = new JLabel("Cartelera");
-        frameTitle.setFont(new Font("Montserrat", Font.BOLD, 25));
-        frameTitle.setForeground(Color.BLACK);
-        titleContainer.add(frameTitle, BorderLayout.LINE_START);
-
-        searchBar = new CustomTextField(15, new Font("Montserrat", Font.BOLD, 16), new Color(226, 226, 226),
-                new Dimension(5,5), false, false);
-        searchBar.setPlaceholder("Buscar");
-        Dimension sizeSearch = searchBar.getSize();
-        sizeSearch.width = 200;
-
-        searchBar.setPreferredSize(sizeSearch);
-        titleContainer.add(searchBar, BorderLayout.LINE_END);
-
-        billboardContainer.add(titleContainer, BorderLayout.NORTH);
+        Font textFieldFont = new Font("Montserrat", Font.BOLD, 32);
+        goToBillboard = new CustomButton("Ver cartelera", 20, CustomFrame.BGCOLOR, new Color(0, 25, 81), Color.white, textFieldFont);
+        goToScreaning = new CustomButton("Gestionar horarios", 20, CustomFrame.BGCOLOR, new Color(0, 25, 81), Color.white, textFieldFont);
 
 
-            // MOVIE LIST
-        //ArrayList<Movie> movies = Movie.movieList();
-        movieList = new GroupMovie(20,20, parentFrame);
+        container.add(goToBillboard);
+        container.add(goToScreaning);
 
-        scroll = new CustomScrollPane(movieList);
-        billboardContainer.add(scroll);
+        billboardContainer.add(container, BorderLayout.CENTER);
+
+        JLabel title = new JLabel("Seleccione una opcion");
+        title.setHorizontalAlignment(SwingConstants.CENTER);
+        title.setFont(new Font("Montserrat", Font.BOLD, 20));
+        billboardContainer.add(title, BorderLayout.NORTH);
+
 
         this.add(billboardContainer, BorderLayout.CENTER);
 
-        BillboardPanelController.initiate(this);
+        AdminSelectionController.initiate(this);
     }
 
     @Override

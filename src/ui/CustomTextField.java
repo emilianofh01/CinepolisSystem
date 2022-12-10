@@ -26,9 +26,10 @@ public class CustomTextField extends JPasswordField {
 
     private Dimension padding;
     boolean onFocus = false;
+    boolean outline = false;
 
     @ConstructorProperties({"Valor de redondeo", "Fuente(Tipografia)", "Color de fondo", "Padding(Espaciado hacia adentro)", "¿Desea ocultar la informacion?"})
-    public CustomTextField(int roundValue, Font font, Color defaultColor, Dimension padding, boolean needToHide) {
+    public CustomTextField(int roundValue, Font font, Color defaultColor, Dimension padding, boolean needToHide, boolean outline) {
         this.roundValue = roundValue;
         this.font = font;
         this.defaultColor = defaultColor;
@@ -36,6 +37,8 @@ public class CustomTextField extends JPasswordField {
         this.setLayout(null);
         this.setBackground(new Color(255, 255, 255, 255));
         this.setBackground(defaultColor);
+        this.setFocusable(true);
+        this.outline = outline;
 
         if (!needToHide) setEchoChar((char) 0);
         this.setFont(font);
@@ -72,15 +75,19 @@ public class CustomTextField extends JPasswordField {
             g2.drawString(placeholder, getInsets().left, (g.getFontMetrics()
                     .getMaxAscent() + getInsets().top + getHeight() / 2) - g.getFontMetrics().getHeight() / 2);
         }
-        if(onFocus) {
+        super.paintComponent(g);
+
+        if(onFocus && outline) {
             g2.setColor(CustomFrame.BGCOLOR);
-            //g2.setStroke(new BasicStroke(1));
-            for (int i = 1; i < 4; i++) {
+            g2.setStroke(new BasicStroke(2));
+            g2.drawRoundRect(1  ,1, getWidth()-3, getHeight()-3, getRoundValue() ,getRoundValue() );
+            /*for (int i = 1; i < 4; i++) {
                 g2.drawRoundRect(i,i, getWidth()-(i*2), getHeight()-(i*2), getRoundValue() - (i*3),getRoundValue() - (i*3));
-            }
+            }*/
             repaint();
         }
-        super.paintComponent(g);
+        //g2.dispose();
+        //g.dispose();
     }
 
     public int getRoundValue() {

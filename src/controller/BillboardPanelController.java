@@ -1,143 +1,73 @@
-/**
- *  Ingenieria en desarrollo de software
- *  Proyecto final - Programacion III
- *
- *  Emiliano Fernandez Hernandez
- *  Kenneth De Guadalupe Quintero Valles
- */
-
 package controller;
 
+import model.Employee;
 import model.Movie;
-import model.Screening;
 import view.BillboardPanel;
 import view.CustomFrame;
 
-import javax.imageio.ImageIO;
 import javax.swing.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import java.awt.*;
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
-import java.sql.Blob;
-import java.sql.SQLException;
-import java.sql.Timestamp;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
+import java.awt.event.ActionEvent;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.concurrent.TimeUnit;
 
 public class BillboardPanelController {
     public static void initiate(BillboardPanel panel) {
-        BillboardPanelController.populateTable(panel);
-        new TableController(panel.tabla);
+        BillboardPanelController.getMovies(panel);
+        panel.backBtn.addActionListener(e -> returnToBack(panel));
+        panel.updateTableMenuBar.addActionListener(e -> getMovies(panel));
+        panel.logOutmenuBar.addActionListener(e -> logout(panel));
+        panel.searchBar.getDocument().addDocumentListener(new DocumentListener() {
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                searchMovies(panel, String.valueOf(panel.searchBar.getPassword()));
+            }
 
-        panel.eliminarBtn.addActionListener(q -> deleteDataRow(panel));
-        panel.modificarBtn.addActionListener(q -> openEditFrame(panel));
-        panel.agregarBtn.addActionListener(q -> addDataRow(panel));
-        panel.cerrarSesionBtn.addActionListener(q -> logOut(panel));
-        panel.logOutmenuBar.addActionListener(q -> logOut(panel));
-        panel.updateTableMenuBar.addActionListener(q -> updateTable(panel));
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                searchMovies(panel, String.valueOf(panel.searchBar.getPassword()));
+
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+
+            }
+        });
+
+        if(panel.parentFrame.getLoggedEmployee() == null || !panel.parentFrame.getLoggedEmployee().isAdmin()) {
+            panel.backBtn.setText("Actualizar");
+            panel.backBtn.setPreferredSize(new Dimension(120, 40));
+        }
+
     }
 
-    public static void updateTable(BillboardPanel panel) {
-        panel.tableModel.removeAllArrow();
-        populateTable(panel);
-        panel.tableModel.fireTableDataChanged();
-        TableController.idSelected = "";
-        TableController.rowSelected = -1;
-    }
-
-    public static void logOut(BillboardPanel panel) {
-        int result = JOptionPane.showConfirmDialog(panel, "¿Esta seguro que desea salir?" , "¡Cuidado!",
-                JOptionPane.YES_NO_OPTION,
-                JOptionPane.QUESTION_MESSAGE);
-
-        if(result == JOptionPane.YES_NO_CANCEL_OPTION || result == JOptionPane.DEFAULT_OPTION) return;
-
-        TableController.idSelected = "";
-        TableController.rowSelected = -1;
+    private static void logout(BillboardPanel panel) {
         panel.parentFrame.setLoggedEmployee(null);
         panel.parentFrame.changeScreen(CustomFrame.Screen.LOG_IN);
     }
 
-    public static void openEditFrame(BillboardPanel panel) {
-        if (TableController.rowSelected == -1 || TableController.idSelected.isBlank()) {
-            JOptionPane.showMessageDialog(panel, "Debes seleccionar un registro antes de modificar");
-            return;
+    private static void getMovies(BillboardPanel panel) {
+        ArrayList<Movie> movies= Movie.movieList();
+
+        panel.movieList.setMovieList(movies);
+    }
+
+    private static void returnToBack(BillboardPanel panel) {
+        Employee empleado = panel.parentFrame.getLoggedEmployee();
+        if(empleado != null && empleado.isAdmin()) {
+            panel.parentFrame.changeScreen(CustomFrame.Screen.ADMINSELECTION);
+        } else {
+            panel.parentFrame.changeScreen(CustomFrame.Screen.BILLBOARD);
         }
-        panel.parentFrame.changeScreen(CustomFrame.Screen.SCREENINGFORM);
     }
 
-    public static void deleteDataRow(BillboardPanel panel) {
+    private static void searchMovies(BillboardPanel panel, String text) {
+        ArrayList<Movie> movies = Movie.getMovies(text);
 
-        if (TableController.rowSelected == -1 || TableController.idSelected.isEmpty()) {
-            JOptionPane.showMessageDialog(panel, "Debes seleccionar un registro antes de eliminar");
-            return;
-        }
-        int result = JOptionPane.showConfirmDialog(panel, "¿Esta seguro de eliminar este registro?" , "¡Cuidado!",
-                JOptionPane.YES_NO_OPTION,
-                JOptionPane.QUESTION_MESSAGE);
+        panel.movieList.setMovieList(movies);
 
-        if(result == JOptionPane.YES_NO_CANCEL_OPTION || result == JOptionPane.DEFAULT_OPTION) return;
-
-        Screening.delete(Integer.parseInt(TableController.idSelected));
-        panel.tableModel.removeRow(TableController.rowSelected);
-        panel.tableModel.fireTableDataChanged();
-        TableController.idSelected = "";
-        TableController.rowSelected = -1;
-    }
-
-    public static void addDataRow(BillboardPanel panel) {
-        TableController.idSelected = "";
-        TableController.rowSelected = -1;
-        panel.parentFrame.changeScreen(CustomFrame.Screen.SCREENINGFORM);
-    }
-
-    public static void populateTable(BillboardPanel panel) {
-        SimpleDateFormat format = new SimpleDateFormat("h:mm a");
-        ArrayList<Screening> list = Screening.screeningList();
-
-
-
-        list.forEach((s) -> {
-            Movie m = Movie.getMovie(s.getMovieId());
-
-            URL trailerUrl = m.getTrailerURL();
-            ImageIcon icon;
-            try {
-                BufferedImage image = ImageIO.read(trailerUrl);
-
-                icon = new ImageIcon(image);
-                icon = new ImageIcon(icon.getImage().getScaledInstance(100,125, Image.SCALE_SMOOTH));
-
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-
-
-            Calendar cal = Calendar.getInstance();
-            try {
-                Date d = format.parse(format.format(s.getScreeningStart()));
-                cal.setTime(d);
-            } catch (ParseException e) {
-                throw new RuntimeException(e);
-            }
-            cal.add(Calendar.MINUTE, m.getDuracionMin());
-
-
-            panel.tableModel.addRow(new Object[]{
-                    s.getId(),
-                    icon,
-                    m.getTituloCartelera(),
-                    s.getRoom(),
-                    format.format(s.getScreeningStart()),
-                    format.format(cal.getTime())
-            });
-        });
+        System.out.println(text);
     }
 }

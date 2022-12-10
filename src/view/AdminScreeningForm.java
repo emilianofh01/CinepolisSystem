@@ -21,7 +21,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Calendar;
 
-public class ScreeningForm extends AbstractCinepolisPanel {
+public class AdminScreeningForm extends AbstractCinepolisPanel {
     public CustomFrame parentFrame;
     public JTextField screeningId;
     public JComboBox<String> screeningRoom;
@@ -30,7 +30,8 @@ public class ScreeningForm extends AbstractCinepolisPanel {
 
     public JButton btnCancelar, confirmarBtn;
 
-    public ScreeningForm(CustomFrame parentFrame) {
+
+    public AdminScreeningForm(CustomFrame parentFrame) {
         super(parentFrame);
         this.parentFrame = parentFrame;
     }
@@ -45,7 +46,7 @@ public class ScreeningForm extends AbstractCinepolisPanel {
         SpinnerDateModel ScreeningModel = new SpinnerDateModel();
         ScreeningModel.setCalendarField(Calendar.MINUTE);
         screeningStart.setModel(ScreeningModel);
-        screeningStart.setEditor(new JSpinner.DateEditor(screeningStart, "yyyy-MM-dd HH:mm:ss"));
+        screeningStart.setEditor(new JSpinner.DateEditor(screeningStart, "yyyy-MM-dd HH:mm"));
 
         SpinnerDateModel movieModel = new SpinnerDateModel();
         movieModel.setCalendarField(Calendar.MINUTE);
@@ -59,16 +60,41 @@ public class ScreeningForm extends AbstractCinepolisPanel {
 
         // NORTH
         JPanel northContainer = new JPanel();
+        northContainer.setBackground(CustomFrame.BGCOLOR);
+        int marginh = 20;
+        //northContainer.add(Box.createHorizontalStrut(marginh));
+        northContainer.setLayout(new BorderLayout());
         try {
             BufferedImage logo = ImageIO.read(new File("src/Assets/logoCinepolis.png"));
-            JLabel l = new JLabel(new ImageIcon(logo));
 
-            northContainer.add(l);
+            BufferedImage resized = new BufferedImage(191,43, BufferedImage.TYPE_INT_ARGB);
+            Graphics2D g2 = resized.createGraphics();
+            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+            g2.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+            g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+            g2.drawImage(logo ,0, 0, 191,43, null);
+
+
+            JLabel l = new JLabel(new ImageIcon(resized));
+            l.setPreferredSize(new Dimension(191, 43));
+
+            northContainer.add(l, BorderLayout.LINE_START);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        northContainer.setBackground(CustomFrame.BGCOLOR);
+
+        JPanel wrapBackBtn = new JPanel();
+        wrapBackBtn.setBackground(CustomFrame.BGCOLOR);
+        /*backBtn = new CustomButton("Volver", 40, new Color(243,127,127),
+                new Color(176,92,92), Color.WHITE, new Font("Montserrat", Font.BOLD, 15));
+        backBtn.setPreferredSize(new Dimension(125, 40));*/
+
+        //wrapBackBtn.add(backBtn);
+        //northContainer.add(wrapBackBtn, BorderLayout.LINE_END);
+
+        //northContainer.add(Box.createHorizontalStrut(marginh));
         this.add(northContainer, BorderLayout.NORTH);
+
 
         // CENTER
         RoundContainer container = new RoundContainer(45);
@@ -88,6 +114,9 @@ public class ScreeningForm extends AbstractCinepolisPanel {
             l.setFont(new Font("Montserrat", Font.BOLD, 15));
             screeningForm.add(l);
 
+            //JPanel panel = new JPanel();
+            //screeningForm.add(panel);
+
             if (inputsScreening[i] instanceof JTextField obj) {
                 obj.setFont(new Font("Montserrat", Font.BOLD, 15));
 
@@ -101,13 +130,15 @@ public class ScreeningForm extends AbstractCinepolisPanel {
                 screeningForm.add(obj);
             } else if (inputsScreening[i] instanceof JComboBox<?> obj) {
                 obj.setFont(new Font("Montserrat", Font.BOLD, 15));
-                obj.setBorder(BorderFactory.createEmptyBorder(20,20,20,20));
+                obj.setBorder(BorderFactory.createEmptyBorder(20,0,20,0));
                 obj.setBackground(Color.white);
                 //obj.setMaximumSize(new Dimension(obj.getPreferredSize().width, 15));
                 screeningForm.add(obj);
             }
         }
-        SpringUtilities.makeGrid(screeningForm, inputsScreening.length, 2, 6, 6, 0, 56);
+
+
+        SpringUtilities.makeGrid(screeningForm, inputsScreening.length, 2, 0, 0, 10, 56);
         container.add(screeningForm, BorderLayout.CENTER);
 
         this.add(container, BorderLayout.CENTER);

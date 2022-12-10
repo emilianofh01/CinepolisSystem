@@ -30,9 +30,12 @@ public class CustomFrame extends JFrame {
 
     public enum Screen {
         LOG_IN(LoginPanel::new),
+        ADMINBILLBOARD(AdminBillboardPanel::new),
+        SCREENINGFORM(AdminScreeningForm::new),
         BILLBOARD(BillboardPanel::new),
-        SCREENINGFORM(ScreeningForm::new);
-
+        PREVIEWMOVIE(PreviewMovie::new),
+        ADMINSELECTION(AdminSelection::new),
+        TICKETS(TicketPanel::new);
 
         private final Function<CustomFrame, AbstractCinepolisPanel> panelGetter;
 
@@ -74,7 +77,7 @@ public class CustomFrame extends JFrame {
         menuBar = new JMenuBar();
         setJMenuBar(menuBar);
 
-        this.setResizable(false);
+        this.setResizable(true);
         this.setIconImage(new ImageIcon("src/assets/imageIcon.jpg").getImage());
         this.setMinimumSize(new Dimension(1080, 701));
         this.setDefaultCloseOperation(EXIT_ON_CLOSE);

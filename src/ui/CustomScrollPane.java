@@ -12,15 +12,11 @@ package ui;
 import java.awt.Color;
 import java.awt.Dimension;
 
-import javax.swing.BorderFactory;
-import javax.swing.JScrollBar;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.JViewport;
+import javax.swing.*;
 import javax.swing.border.Border;
 
 public class CustomScrollPane extends JScrollPane {
-    public CustomScrollPane(JTable table) {
+    public CustomScrollPane(JComponent table) {
         super(table);
     }
 

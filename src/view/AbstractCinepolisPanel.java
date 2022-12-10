@@ -10,6 +10,7 @@
 package view;
 
 import javax.swing.*;
+import java.awt.*;
 
 public abstract class AbstractCinepolisPanel extends JPanel {
     public final CustomFrame parentFrame;

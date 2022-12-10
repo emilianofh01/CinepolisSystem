@@ -23,7 +23,7 @@ public final class MYSQLConnection {
         String port = "3306";
         String username = "root";
         String password = "";
-        String url = "jdbc:mysql://" + hostname + ":" + port + "/" + database + "?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC";
+        String url = "jdbc:mysql://" + hostname + ":" + port + "/" + database; //+ "?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC";
 
         if (conn == null) {
             try {

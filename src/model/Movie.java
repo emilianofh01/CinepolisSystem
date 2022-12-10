@@ -15,6 +15,7 @@ import java.net.URL;
 import java.sql.*;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class Movie {
 
@@ -65,6 +66,38 @@ public class Movie {
         try {
             String query = "SELECT * FROM peliculas";
             PreparedStatement st = MYSQLConnection.conn.prepareStatement(query);
+            ResultSet rs = st.executeQuery();
+
+            while (rs.next()) {
+                movies.add(new Movie(
+                        rs.getInt("id"),
+                        rs.getString("titulo_cartelera"),
+                        rs.getString("titulo_original"),
+                        rs.getInt("clasificacionId"),
+                        rs.getInt("duracionMin"),
+                        rs.getInt("generoId"),
+                        rs.getString("sinopsis"),
+                        rs.getInt("director"),
+                        rs.getURL("trailerURL")
+                ));
+            }
+
+            st.close();
+            rs.close();
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+
+        return movies;
+    }
+
+    public static ArrayList<Movie> getMovies(String search) {
+        ArrayList<Movie> movies = new ArrayList<>();
+
+        try {
+            String query = "SELECT * FROM peliculas WHERE titulo_cartelera LIKE ?";
+            PreparedStatement st = MYSQLConnection.conn.prepareStatement(query);
+            st.setString(1, ("%" + search + "%"));
             ResultSet rs = st.executeQuery();
 
             while (rs.next()) {

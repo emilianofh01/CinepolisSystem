@@ -40,15 +40,35 @@ public class LoginPanel extends AbstractCinepolisPanel {
 
         // NORTH
         JPanel northContainer = new JPanel();
+        northContainer.setBackground(CustomFrame.BGCOLOR);
+        int marginh = 20;
+        //northContainer.add(Box.createHorizontalStrut(marginh));
+        northContainer.setLayout(new BorderLayout());
         try {
             BufferedImage logo = ImageIO.read(new File("src/Assets/logoCinepolis.png"));
-            JLabel l = new JLabel(new ImageIcon(logo));
 
-            northContainer.add(l);
+            BufferedImage resized = new BufferedImage(191,43, BufferedImage.TYPE_INT_ARGB);
+            Graphics2D g2 = resized.createGraphics();
+            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+            g2.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+            g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+            g2.drawImage(logo ,0, 0, 191,43, null);
+
+
+            JLabel l = new JLabel(new ImageIcon(resized));
+            l.setPreferredSize(new Dimension(191, 43));
+
+            northContainer.add(l, BorderLayout.LINE_START);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        northContainer.setBackground(CustomFrame.BGCOLOR);
+
+        JPanel wrapBackBtn = new JPanel();
+        wrapBackBtn.setBackground(CustomFrame.BGCOLOR);
+
+        northContainer.add(wrapBackBtn, BorderLayout.LINE_END);
+
+        //northContainer.add(Box.createHorizontalStrut(marginh));
         this.add(northContainer, BorderLayout.NORTH);
 
         // CENTER
@@ -89,7 +109,7 @@ public class LoginPanel extends AbstractCinepolisPanel {
             Font textFieldFont = new Font("Montserrat", Font.BOLD, 16);
             Color defaultBGColor = new Color(226, 226, 226);
 
-            userNameField = new CustomTextField(15, textFieldFont, defaultBGColor, new Dimension(5, 5), false);
+            userNameField = new CustomTextField(15, textFieldFont, defaultBGColor, new Dimension(5, 5), false, true);
             userNameField.setPreferredSize(new Dimension(Integer.MAX_VALUE, 40));
             userNameField.setMaximumSize(new Dimension(Integer.MAX_VALUE, 40));
             userNameField.setPlaceholder("Nombre de usuario");
@@ -99,7 +119,7 @@ public class LoginPanel extends AbstractCinepolisPanel {
 
 
             // CENTER --> Form container --> TextField Password
-            passwordField = new CustomTextField(15, textFieldFont, defaultBGColor, new Dimension(5, 5), true);
+            passwordField = new CustomTextField(15, textFieldFont, defaultBGColor, new Dimension(5, 5), true, true);
             passwordField.setPreferredSize(new Dimension(Integer.MAX_VALUE, 40));
             passwordField.setMaximumSize(new Dimension(Integer.MAX_VALUE, 40));
             passwordField.setPlaceholder("Contraseña");
@@ -166,7 +186,11 @@ public class LoginPanel extends AbstractCinepolisPanel {
 
     public void logIn(Employee employee) {
         parentFrame.setLoggedEmployee(employee);
-        parentFrame.changeScreen(CustomFrame.Screen.BILLBOARD);
+        if(parentFrame.getLoggedEmployee().isAdmin()) {
+            parentFrame.changeScreen(CustomFrame.Screen.ADMINSELECTION);
+        } else {
+            parentFrame.changeScreen(CustomFrame.Screen.BILLBOARD);
+        }
     }
 
     public void tryAgain() {

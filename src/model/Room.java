@@ -43,6 +43,52 @@ public class Room {
         return data;
     }
 
+    public static Room obtenerSala(int idsala) {
+        Room sala = null;
+
+        try {
+            String query = "SELECT * FROM salas WHERE id = ?";
+            PreparedStatement st = MYSQLConnection.conn.prepareStatement(query);
+            st.setInt(1, idsala);
+            ResultSet rs = st.executeQuery();
+
+            while (rs.next()) {
+                sala = new Room(
+                        rs.getInt("id"),
+                        rs.getInt("numAsiento"),
+                        rs.getString("tipo")
+                );
+            }
+
+            st.close();
+            rs.close();
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+
+        return sala;
+    }
+
+    public static String getTipoSala(int idSala) {
+        String tipo = null;
+        try {
+            String query = "SELECT tipo FROM salas WHERE id = ?";
+            PreparedStatement st = MYSQLConnection.conn.prepareStatement(query);
+            st.setInt(1, idSala);
+            ResultSet rs = st.executeQuery();
+
+            while (rs.next()) {
+                tipo = rs.getString("tipo");
+            }
+
+            st.close();
+            rs.close();
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+        return tipo;
+    }
+
     public int getId() {
         return id;
     }
