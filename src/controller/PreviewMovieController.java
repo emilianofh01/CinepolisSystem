@@ -36,6 +36,7 @@ public class PreviewMovieController {
             public void stateChanged(ChangeEvent e) {
                 int cantidad = Integer.parseInt(panel.cantidad.getValue().toString());
                 BigDecimal costoPelicula = ((Screening) Objects.requireNonNull(panel.horarios.getSelectedItem())).getCosto();
+                int disponibilidad = Screening.obtenerDisponibilidad(((Screening)panel.horarios.getSelectedItem()).getId());
 
                 BigDecimal total = costoPelicula.multiply(BigDecimal.valueOf(cantidad));
                 total = total.setScale(2, RoundingMode.CEILING);
@@ -44,32 +45,36 @@ public class PreviewMovieController {
                 if((int)panel.cantidad.getValue() <= 0) {
                     panel.confirmar.setEnabled(false);
                 } else {
-                    panel.confirmar.setEnabled(cantidad > 0);
+                    panel.confirmar.setEnabled(cantidad > 0 && cantidad <= disponibilidad);
+                    if(cantidad > disponibilidad) {
+                        JOptionPane.showMessageDialog(panel,"La cantidad de boletos es mayor a la disponible, favor de seleccionar hasta la cantidad disponible");
+                    }
                 }
             }
         });
     }
 
     public static void comprar(PreviewMovie panel) throws WriterException {
+        ArrayList<Tickets> tickets = new ArrayList<>();
+        double monto = Double.parseDouble(panel.precio.getText().replace("$",""));
+        int cantidad = Integer.parseInt(panel.cantidad.getValue().toString());
 
-        if(JOptionPane.showConfirmDialog(panel, "¿Estas seguro de hacer esta compra?") == 0) {
-            ArrayList<Tickets> tickets = new ArrayList<>();
-            double monto = Double.parseDouble(panel.precio.getText().replace("$",""));
-            int cantidad = Integer.parseInt(panel.cantidad.getValue().toString());
-            Blob codigoVen = Tickets.generateUUID();
+        if(Screening.obtenerDisponibilidad(((Screening)panel.horarios.getSelectedItem()).getId()) <= cantidad) {
+            if(JOptionPane.showConfirmDialog(panel, "¿Estas seguro de hacer esta compra?") == 0) {
+                Blob codigoVen = Tickets.generateUUID();
 
-            Tickets.createReport(codigoVen, cantidad, monto);
+                Tickets.createReport(codigoVen, cantidad, monto);
 
-            for (int i = 0; i < cantidad; i++) {
-                //System.out.println(codigoVen);
-                tickets.add(new Tickets(((Screening)panel.horarios.getSelectedItem()).getId(), "A", codigoVen));
+                for (int i = 0; i < cantidad; i++) {
+                    tickets.add(new Tickets(((Screening)panel.horarios.getSelectedItem()).getId(), "A", codigoVen));
+                }
+
+                Tickets.buyTickets(tickets);
+                TicketPanel.compraReciente = codigoVen;
+                panel.parentFrame.changeScreen(CustomFrame.Screen.TICKETS);
             }
-
-            Tickets.buyTickets(tickets);
-            TicketPanel.compraReciente = codigoVen;
-            //TicketPanel.imageContainer = new JPanel();
-            //TicketPanel.imageContainer.add(new JLabel(new ImageIcon(TicketPanel.generateQRcode("Te amo", 512, null))));
-            panel.parentFrame.changeScreen(CustomFrame.Screen.TICKETS);
+        } else {
+            JOptionPane.showMessageDialog(panel,"La cantidad de boletos es mayor a la disponible, favor de seleccionar hasta la cantidad disponible");
         }
     }
 
